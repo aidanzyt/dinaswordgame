@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lettora Word Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .intro-container, .game-container, #endScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .intro-container {
+            gap: 20px; /* Space between elements */
+            margin-top: -150px; /* Adjust starting vertical position */
+        }
+        .logo {
+            margin-bottom: -180px; /* Adds spacing below the logo */
+        }
+        h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+            margin: 5px 0 15px 0;
+        }
+        .play-button {
+            font-size: 20px;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            z-index: 1;
+        }
+        .play-button:hover {
+            background-color: #45a049;
+        }
+        .game-container {
+            display: none;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            gap: 20px; /* Add spacing between elements */
+            position: relative;
+        }
+        .game-logo {
+            position: absolute;
+            top: -270px; /* Position logo above game without moving game */
+            right: 140px;
+            width: 400px;
+        }
+        #letters {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+        #timer {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #wordInput {
+            font-size: 24px;
+            padding: 10px;
+            width: 80%;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            background-color: #e8f5e9;
+            color: #333;
+        }
+        #submitButton {
+            font-size: 20px;
+            padding: 10px 70px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        #submitButton:hover {
+            background-color: #45a049;
+        }
+        #wordsList {
+            font-size: 18px;
+            color: #333;
+            text-align: left;
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Space between words */
+        }
+        #wordsList p {
+            margin: 0; /* Remove default paragraph margin */
+        }
+        #endScreen {
+            background-color: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+        .popup {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+        .popup h2 {
+            color: green;
+        }
+        .popup button {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Intro Screen -->
+    <div class="intro-container" id="introScreen">
+        <img src="LETTORA.png" alt="Lettora Logo" class="logo" width="500"> <!-- Adjusted width for better spacing -->
+        <h1>Welcome to Lettora!</h1>
+        <p>Create as many words as possible using the two letters.<br>You have 90 seconds to play.</p>
+        <button class="play-button" onclick="startGame()">Play</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game" class="game-container">
+        <!-- Game Logo Positioned Above -->
+        <img src="LETTORA.png" alt="Lettora Logo" class="game-logo">
+        
+        <h1 id="letters">AB</h1>
+        <p id="timer">Time left: 90</p>
+        <input type="text" id="wordInput" placeholder="Enter word">
+        <button id="submitButton" onclick="submitWord()">Submit</button>
+        <div id="wordsList"></div>
+    </div>
+
+    <!-- End Game Popup -->
+    <div id="endScreen">
+        <div class="popup">
+            <h2>Game Over!</h2>
+            <p>Your Score: <span id="finalScore"></span></p>
+            <button onclick="closeEndScreen()">Close</button>
+        </div>
+    </div>
+
+    <!-- Link to JavaScript file -->
+    <script src="javascriptlettora.js"></script>
+</body>
+</html>
