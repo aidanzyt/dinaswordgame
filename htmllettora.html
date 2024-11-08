@@ -2,181 +2,505 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lettora Word Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f5f5f5;
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --background: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #34495e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
             display: flex;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .intro-container, .game-container, #endScreen {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
         }
-        .intro-container {
-            gap: 20px; /* Space between elements */
-            margin-top: -150px; /* Adjust starting vertical position */
-        }
-        .logo {
-            margin-bottom: -180px; /* Adds spacing below the logo */
-        }
-        h1 {
-            font-size: 36px;
-            margin: 0;
-        }
-        p {
-            font-size: 18px;
-            color: #333;
-            margin: 5px 0 15px 0;
-        }
-        .play-button {
-            font-size: 20px;
-            padding: 15px 30px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-            z-index: 1;
-        }
-        .play-button:hover {
-            background-color: #45a049;
-        }
-        .game-container {
-            display: none;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            width: 100%;
-            gap: 20px; /* Add spacing between elements */
-            position: relative;
-        }
-        .game-logo {
-            position: absolute;
-            top: -270px; /* Position logo above game without moving game */
-            right: 140px;
-            width: 400px;
-        }
-        #letters {
-            font-size: 70px;
-            margin-bottom: 20px;
-        }
-        #timer {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        #wordInput {
-            font-size: 24px;
-            padding: 10px;
-            width: 80%;
-            border: 2px solid #4CAF50;
-            border-radius: 5px;
-            background-color: #e8f5e9;
-            color: #333;
-        }
-        #submitButton {
-            font-size: 20px;
-            padding: 10px 70px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-        #submitButton:hover {
-            background-color: #45a049;
-        }
-        #wordsList {
-            font-size: 18px;
-            color: #333;
-            text-align: left;
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px; /* Space between words */
-        }
-        #wordsList p {
-            margin: 0; /* Remove default paragraph margin */
-        }
-        #endScreen {
-            background-color: rgba(0, 0, 0, 0.7);
+
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+            opacity: 0.3;
+            z-index: -1;
+            animation: gradientBG 15s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .logo {
+            width: min(300px, 80%);
+            height: auto;
+            margin: 20px 0;
+        }
+
+        #homeLogo {
+            margin-bottom: -300px;
+        }
+
+        .intro-container, .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            margin: auto;
+        }
+
+        .game-container {
+            display: none;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: min(600px, 95%);
+        }
+
+        h1 {
+            font-size: clamp(24px, 5vw, 36px);
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: clamp(16px, 3vw, 18px);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .play-button, #submitButton {
+            font-size: clamp(16px, 3vw, 20px);
+            padding: 15px 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            width: min(300px, 80%);
+        }
+
+        .play-button:hover, #submitButton:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        #letters {
+            font-size: clamp(48px, 15vw, 72px);
+            color: var(--text-primary);
+            font-weight: bold;
+            margin: 20px 0;
+            letter-spacing: 0.1em;
+        }
+
+        #timer {
+            font-size: clamp(18px, 4vw, 24px);
+            color: var(--text-secondary);
+            margin: 10px 0;
+        }
+
+        .progress-container {
+            width: 90%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            transform-origin: left;
+            transition: transform 1s linear;
+        }
+
+        #wordInput {
+            font-size: clamp(16px, 3vw, 20px);
+            padding: 15px;
+            width: min(400px, 90%);
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            margin: 10px 0;
+        }
+
+        #wordInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #wordInput.invalid {
+            border-color: #ff4757;
+            background-color: #ffe6e6;
+        }
+
+        #errorMessage {
+            color: #ff4757;
+            font-size: clamp(14px, 2vw, 16px);
+            min-height: 20px;
+            margin: 5px 0;
+        }
+
+        #wordsList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        #wordsList p {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 10px;
+            margin: 0;
+            font-size: clamp(14px, 2vw, 16px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .high-score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        #endScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
-            display: none;
+            z-index: 1000;
         }
+
         .popup {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
             text-align: center;
-            width: 300px;
+            max-width: 90%;
+            width: 400px;
         }
-        .popup h2 {
-            color: green;
-        }
+
         .popup button {
-            background-color: black;
+            font-size: 18px;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
+            margin-top: 20px;
         }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .high-score {
+                top: auto;
+                bottom: 20px;
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+        }
+
+        .timer-warning {
+            color: #ff4757 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        #wordsList p {
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 10px;
+    margin: 0;
+    font-size: clamp(14px, 2vw, 16px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.score-popup {
+    margin-left: 8px;
+    color: var(--primary-color);
+    font-weight: bold;
+    animation: scorePopup 0.3s ease;
+}
+
+@keyframes scorePopup {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
     </style>
 </head>
 <body>
+    <div class="success-flash"></div>
+    <div class="high-score">High Score: <span id="highScoreDisplay">0</span></div>
+    
+    <div class="container">
+        <img src="LETTORA.png" alt="Lettora Logo" id="homeLogo" class="logo">
 
-    <!-- Intro Screen -->
-    <div class="intro-container" id="introScreen">
-        <img src="LETTORA.png" alt="Lettora Logo" class="logo" width="500"> <!-- Adjusted width for better spacing -->
-        <h1>Welcome to Lettora!</h1>
-        <p>Create as many words as possible using the two letters.<br>You have 90 seconds to play.</p>
-        <button class="play-button" onclick="startGame()">Play</button>
-    </div>
+        <div class="intro-container" id="introScreen">
+            <h1>Welcome to Lettora!</h1>
+            <p>Create as many words as possible using the two letters.<br>You have 90 seconds to play.</p>
+            <button class="play-button" onclick="startGame()">Play</button>
+        </div>
 
-    <!-- Game Screen -->
-    <div id="game" class="game-container">
-        <!-- Game Logo Positioned Above -->
-        <img src="LETTORA.png" alt="Lettora Logo" class="game-logo">
-        
-        <h1 id="letters">AB</h1>
-        <p id="timer">Time left: 90</p>
-        <input type="text" id="wordInput" placeholder="Enter word">
-        <button id="submitButton" onclick="submitWord()">Submit</button>
-        <div id="wordsList"></div>
-    </div>
+        <div id="game" class="game-container">
+            <h1 id="letters">AB</h1>
+            <p id="timer">Time left: 90</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="timeProgress"></div>
+            </div>
+            <input type="text" id="wordInput" placeholder="Enter word" autocomplete="off">
+            <div id="errorMessage"></div>
+            <button id="submitButton" onclick="submitWord()">Submit</button>
+            <div id="wordsList"></div>
+        </div>
 
-    <!-- End Game Popup -->
-    <div id="endScreen">
-        <div class="popup">
-            <h2>Game Over!</h2>
-            <p>Your Score: <span id="finalScore"></span></p>
-            <button onclick="closeEndScreen()">Close</button>
+        <div id="endScreen">
+            <div class="popup">
+                <h2>Game Over!</h2>
+                <p>Your Score: <span id="finalScore"></span></p>
+                <button onclick="closeEndScreen()">Play Again</button>
+            </div>
         </div>
     </div>
 
-    <!-- Link to JavaScript file -->
-    <script src="javascriptlettora.js"></script>
+    <script>
+        let letters = getDailyLetters();  // Use daily letters instead of random ones
+        let timeLeft = 90;
+        let score = 0;
+        let words = [];
+        let gameRunning = false;
+        let timerInterval;
+
+        window.onload = function() {
+            updateHighScoreDisplay();
+
+            window.startGame = function() {
+                resetGame();
+                document.getElementById("introScreen").style.display = "none";
+                document.getElementById("homeLogo").style.display = "none";
+                document.getElementById("game").style.display = "flex";
+                gameRunning = true;
+
+                const lettersElement = document.getElementById("letters");
+                lettersElement.innerHTML = letters.map(letter => 
+                    `<span class="letter">${letter}</span>`
+                ).join(' ');
+
+                document.getElementById("wordInput").focus();
+                startTimer();
+            };
+
+            window.submitWord = async function() {
+                if (!gameRunning) return;
+
+                let input = document.getElementById("wordInput");
+                let word = input.value.toLowerCase().trim();
+
+                // Check if word has already been used
+                if (words.includes(word)) {
+                    showError("You've already used that word!");
+                    input.value = "";
+                    input.focus();
+                    return;
+                }
+
+                // Validate word with Datamuse API
+                if (await isValidWord(word)) {
+                    score++;
+                    words.push(word);
+                    displayWord(word);
+                    input.value = "";
+                    input.classList.remove("invalid");
+                } else {
+                    input.classList.add("invalid");
+                    showError("Word not found in dictionary");
+                }
+
+                input.focus();
+            };
+
+            window.closeEndScreen = function() {
+                document.getElementById("endScreen").style.display = "none";
+                document.getElementById("game").style.display = "none";
+                document.getElementById("introScreen").style.display = "flex";
+                document.getElementById("homeLogo").style.display = "block";
+            };
+
+            document.getElementById("wordInput").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    submitWord();
+                }
+            });
+        };
+
+        async function isValidWord(word) {
+            if (!word.includes(letters[0].toLowerCase()) || !word.includes(letters[1].toLowerCase())) {
+                showError(`Word must contain both ${letters[0]} and ${letters[1]}`);
+                return false;
+            }
+
+            if (word.length < 3) {
+                showError("Word must be at least 3 letters long");
+                return false;
+            }
+
+            try {
+                const response = await fetch(`https://api.datamuse.com/words?sp=${word}&max=1`);
+                const data = await response.json();
+                return data.length > 0 && data[0].word === word;
+            } catch (error) {
+                console.error("API Error:", error);
+                showError("Error checking word. Please try again.");
+                return false;
+            }
+        }
+
+        function getDailyLetters() {
+            const now = new Date();
+            const pstOffset = -8; // PST is UTC-8
+            const utcDate = new Date(now.getTime() + pstOffset * 60 * 60 * 1000); // Adjust to PST
+            const dateSeed = utcDate.toISOString().split("T")[0]; // Use the date in PST as the seed
+
+            let hash = 0;
+            for (let i = 0; i < dateSeed.length; i++) {
+                hash = dateSeed.charCodeAt(i) + ((hash << 5) - hash);
+            }
+
+            return [
+                String.fromCharCode(65 + (Math.abs(hash) % 26)),
+                String.fromCharCode(65 + (Math.abs(hash * 2) % 26))
+            ];
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            updateProgressBar(90);
+            timerInterval = setInterval(function() {
+                if (timeLeft > 0 && gameRunning) {
+                    timeLeft--;
+                    document.getElementById("timer").textContent = `Time left: ${timeLeft}`;
+                    updateProgressBar(timeLeft);
+                    if (timeLeft <= 10) {
+                        document.getElementById("timer").classList.add("timer-warning");
+                    }
+                } else {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateProgressBar(timeRemaining) {
+            const progress = (timeRemaining / 90) * 100;
+            document.getElementById('timeProgress').style.transform = `scaleX(${progress / 100})`;
+        }
+
+        function showError(message) {
+            let errorDiv = document.getElementById("errorMessage");
+            errorDiv.textContent = message;
+            setTimeout(() => errorDiv.textContent = "", 2000);
+        }
+
+        function displayWord(word) {
+            const wordElement = document.createElement("p");
+            wordElement.textContent = word;
+            document.getElementById("wordsList").appendChild(wordElement);
+        }
+
+        function updateHighScoreDisplay() {
+            const highScore = localStorage.getItem("lettoraHighScore") || 0;
+            document.getElementById('highScoreDisplay').textContent = highScore;
+        }
+
+        function endGame() {
+            gameRunning = false;
+            document.getElementById("finalScore").textContent = score;
+            document.getElementById("endScreen").style.display = "flex";
+
+            const highScore = localStorage.getItem("lettoraHighScore") || 0;
+            if (score > highScore) {
+                localStorage.setItem("lettoraHighScore", score);
+                document.getElementById("finalScore").textContent += " (New High Score!)";
+            }
+        }
+
+        function resetGame() {
+            timeLeft = 90;
+            score = 0;
+            words = [];
+            document.getElementById("wordsList").innerHTML = "";
+            document.getElementById("timer").textContent = "Time left: 90";
+            document.getElementById("timer").classList.remove("timer-warning");
+            document.getElementById("wordInput").value = "";
+            updateHighScoreDisplay();
+        }
+    </script>
 </body>
 </html>
