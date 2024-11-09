@@ -27,11 +27,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--background);
             min-height: 100vh;
+            height: 100%; /* Add this */
             width: 100%;
-            overflow-x: hidden;
+            overflow: hidden; /* Change from overflow-x: hidden */
             display: flex;
             justify-content: center;
             align-items: center;
+            position: fixed; /* Add this */
+            touch-action: none; /* Add this */
         }
 
         body::before {
@@ -60,8 +63,9 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            min-height: 100vh;
+            height: 100vh; /* Change from min-height to height */
             width: 100%;
+            overflow: hidden; /* Add this */
         }
 
         .logo {
