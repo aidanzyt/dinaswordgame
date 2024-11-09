@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <!-- Main Tile Group -->
+    <g transform="translate(100, 100)">
+        <!-- Bottom tile -->
+        <rect 
+            x="-65" 
+            y="-35" 
+            width="60" 
+            height="60" 
+            fill="#ffffff" 
+            rx="12"
+            transform="rotate(-5)"
+            filter="drop-shadow(2px 2px 4px rgba(0,0,0,0.2))"
+        />
+        
+        <!-- Middle tile -->
+        <rect 
+            x="-25" 
+            y="-45" 
+            width="60" 
+            height="60" 
+            fill="#ffffff" 
+            rx="12"
+            transform="rotate(5)"
+            filter="drop-shadow(2px 2px 4px rgba(0,0,0,0.2))"
+        />
+        
+        <!-- Top tile -->
+        <rect 
+            x="15" 
+            y="-25" 
+            width="60" 
+            height="60" 
+            fill="#ffffff" 
+            rx="12"
+            filter="drop-shadow(2px 2px 4px rgba(0,0,0,0.2))"
+        />
+
+        <!-- Letters -->
+        <text 
+            x="-35" 
+            y="0" 
+            font-family="Arial Black, sans-serif" 
+            font-size="32" 
+            fill="#4CAF50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            transform="rotate(-5)"
+        >D</text>
+        
+        <text 
+            x="5" 
+            y="-10" 
+            font-family="Arial Black, sans-serif" 
+            font-size="32" 
+            fill="#4CAF50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            transform="rotate(5)"
+        >W</text>
+        
+        <text 
+            x="45" 
+            y="10" 
+            font-family="Arial Black, sans-serif" 
+            font-size="32" 
+            fill="#4CAF50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+        >G</text>
+    </g>
+</svg>
