@@ -215,6 +215,18 @@ function updateHighScoreDisplay() {
 function endGame() {
     gameRunning = false;
     document.getElementById("finalScore").textContent = score;
+    
+    // Display final word list
+    const finalWordList = document.getElementById("finalWordList");
+    finalWordList.innerHTML = ''; // Clear previous list
+    
+    words.forEach(word => {
+        const wordElement = document.createElement("p");
+        const wordScore = calculateWordScore(word);
+        wordElement.innerHTML = `${word} <span style="color: var(--primary-color)">+${wordScore}</span>`;
+        finalWordList.appendChild(wordElement);
+    });
+
     document.getElementById("endScreen").style.display = "flex";
 
     const highScore = localStorage.getItem("lettoraHighScore") || 0;
