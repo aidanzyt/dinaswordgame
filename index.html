@@ -314,6 +314,35 @@
             font-weight: bold;
             animation: scorePopup 0.3s ease;
         }
+        #wordSummary {
+    margin: 20px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#finalWordList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    padding: 10px;
+}
+
+#finalWordList p {
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 0;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popup {
+    max-height: 80vh;
+    overflow-y: auto;
+}
     </style>
 </head>
 <body>
@@ -345,6 +374,10 @@
             <div class="popup">
                 <h2>Game Over!</h2>
                 <p>Your Score: <span id="finalScore"></span></p>
+                <div id="wordSummary">
+                    <h3>Your Words:</h3>
+                    <div id="finalWordList"></div>
+                </div>
                 <button onclick="closeEndScreen()">Play Again</button>
             </div>
         </div>
