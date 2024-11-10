@@ -209,17 +209,20 @@ function displayWord(word) {
 
 function updateHighScoreDisplay() {
     const highScore = localStorage.getItem("lettoraHighScore") || 0;
+    const highScoreLetters = localStorage.getItem("lettoraHighScoreLetters") || "AB"; // Default letters if no high score is set yet
     document.getElementById('highScoreDisplay').textContent = highScore;
+    document.getElementById('highScoreLetters').textContent = highScoreLetters;
 }
 
 function endGame() {
-    gameRunning = false;
+    gameRunning = false; // Stop the game
     document.getElementById("finalScore").textContent = score;
-    
+
     // Display final word list
     const finalWordList = document.getElementById("finalWordList");
     finalWordList.innerHTML = ''; // Clear previous list
-    
+
+    // Display each word the player entered with its score
     words.forEach(word => {
         const wordElement = document.createElement("p");
         const wordScore = calculateWordScore(word);
@@ -227,14 +230,22 @@ function endGame() {
         finalWordList.appendChild(wordElement);
     });
 
-    document.getElementById("endScreen").style.display = "flex";
+    document.getElementById("endScreen").style.display = "flex"; // Show the end screen
 
+    // Check for a new high score and update it if applicable
     const highScore = localStorage.getItem("lettoraHighScore") || 0;
     if (score > highScore) {
+        // Update high score in localStorage
         localStorage.setItem("lettoraHighScore", score);
-        document.getElementById("finalScore").textContent += " (New High Score!)";
-        createConfetti();
+        // Save the letters associated with the new high score
+        localStorage.setItem("lettoraHighScoreLetters", letters.join("")); // Store current letters
+
+        document.getElementById("finalScore").textContent += " (New High Score!)"; // Notify player of new high score
+        createConfetti(); // Trigger confetti animation for celebration
     }
+
+    // Update the high score display at the top of the screen with the new values
+    updateHighScoreDisplay(); 
 }
 
 function resetGame() {
@@ -248,7 +259,7 @@ function resetGame() {
     document.getElementById("wordInput").value = "";
     document.getElementById("wordInput").classList.remove("invalid");
     document.getElementById("errorMessage").textContent = "";
-    updateHighScoreDisplay();
+    updateHighScoreDisplay(); // Ensure high score display is updated each time
 }
 
 function createConfetti() {
