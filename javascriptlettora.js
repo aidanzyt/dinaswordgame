@@ -288,24 +288,24 @@ function shareScore() {
     const score = localStorage.getItem("lettoraHighScore") || 0;
     const letters = localStorage.getItem("lettoraHighScoreLetters") || "AB";
     const shareText = `I scored ${score} points in Dina's Word Game with letters ${letters}! Try to beat my score!`;
-    const shareUrl = window.location.href; // Current page URL
+    const shareUrl = window.location.href;
 
+    // Use native sharing for mobile
     if (navigator.share) {
-        // Native sharing on mobile devices
         navigator.share({
             title: "Dina's Word Game",
             text: shareText,
             url: shareUrl
-        }).catch(console.error);
+        }).catch(error => console.error("Error sharing", error));
     } else {
-        // Web-based share options for desktop or unsupported devices
+        // Fallback for non-mobile devices or unsupported browsers
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
         const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
         const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
         const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(shareText + " " + shareUrl)}`;
 
-        // Display options as links in the share button
+        // Replace button content with social media links for desktop
         document.getElementById("shareButton").innerHTML = `
             <a href="${twitterUrl}" target="_blank" style="color: #1DA1F2; margin-right: 10px;">Twitter</a>
             <a href="${facebookUrl}" target="_blank" style="color: #4267B2; margin-right: 10px;">Facebook</a>
