@@ -91,12 +91,6 @@ async function isValidWord(word) {
         return false;
     }
 
-    // Check if word is in the common dictionary set
-    if (!commonWords.has(word)) {
-        showError("Word not found in dictionary");
-        return false;
-    }
-
     // Check with the Datamuse API for word validity
     try {
         const response = await fetch(`https://api.datamuse.com/words?sp=${word}&max=1`);
@@ -159,7 +153,6 @@ function getDailyLetters() {
     return letters;
 }
 
-// Calculate word score based on length
 function calculateWordScore(word) {
     return Math.max(1, Math.floor(word.length * 1.5));
 }
@@ -206,22 +199,13 @@ function showError(message) {
 function displayWord(word) {
     const wordElement = document.createElement("p");
     wordElement.textContent = word;
-
-    // Calculate and display the score for the word
     const scoreSpan = document.createElement("span");
     const wordScore = calculateWordScore(word);
     scoreSpan.textContent = ` +${wordScore}`;
-    scoreSpan.classList.add("score-popup"); // Add class for animation
-
-    // Add the score next to the word and apply animation
+    scoreSpan.classList.add("score-popup"); // Add the class for animation
+    scoreSpan.style.color = "var(--primary-color)";
     wordElement.appendChild(scoreSpan);
     document.getElementById("wordsList").appendChild(wordElement);
-
-    // Increase the total score
-    score += wordScore;
-
-    // Optional success flash animation
-    showSuccessFlash();
 }
 
 function updateHighScoreDisplay() {
@@ -254,40 +238,6 @@ function resetGame() {
     document.getElementById("wordInput").classList.remove("invalid");
     document.getElementById("errorMessage").textContent = "";
     updateHighScoreDisplay();
-}
-
-// Particle and Confetti Effects
-function createParticles() {
-    const numParticles = 3;
-    const colors = ['#4CAF50', '#45a049', '#2E7D32'];
-
-    for (let i = 0; i < numParticles; i++) {
-        setTimeout(() => {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.width = Math.random() * 10 + 5 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-            const startX = Math.random() * window.innerWidth;
-            const startY = window.innerHeight + 10;
-
-            particle.style.left = startX + 'px';
-            particle.style.top = startY + 'px';
-
-            document.body.appendChild(particle);
-
-            const animation = particle.animate([
-                { transform: `translate(0, 0)`, opacity: 0.8 },
-                { transform: `translate(${Math.random() * 200 - 100}px, ${-window.innerHeight - 10}px)`, opacity: 0 }
-            ], {
-                duration: Math.random() * 3000 + 2000,
-                easing: 'linear'
-            });
-
-            animation.onfinish = () => particle.remove();
-        }, i * 300);
-    }
 }
 
 function createConfetti() {
