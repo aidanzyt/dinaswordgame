@@ -25,7 +25,6 @@ window.onload = function() {
 
         document.getElementById("wordInput").focus();
         startTimer();
-        setInterval(createParticles, 2000);
     };
 
     window.submitWord = async function() {
