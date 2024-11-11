@@ -5,6 +5,8 @@ let score = 0;
 let words = [];
 let gameRunning = false;
 let timerInterval;
+let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
+let lastPlayDate = localStorage.getItem('lastPlayDate');
 
 // Wait for DOM to be fully loaded
 window.onload = function() {
@@ -15,6 +17,7 @@ window.onload = function() {
         document.getElementById("introScreen").style.display = "none";
         document.getElementById("homeLogo").style.display = "none";
         document.getElementById("game").style.display = "flex";
+        document.getElementById('streakDisplay').textContent = streak;
         gameRunning = true;
 
         // Display daily letters
@@ -168,6 +171,35 @@ function showSuccessFlash() {
     }
 }
 
+function updateStreak() {
+    const today = new Date().toLocaleDateString();
+    
+    if (lastPlayDate !== today) {
+        // It's a new day
+        if (lastPlayDate) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (lastPlayDate !== yesterday.toLocaleDateString()) {
+                // Streak broken - they missed a day
+                streak = 1;
+            } else {
+                // Continued streak
+                streak++;
+            }
+        } else {
+            // First time playing
+            streak = 1;
+        }
+        
+        // Save the new date and streak
+        localStorage.setItem('lastPlayDate', today);
+        localStorage.setItem('gameStreak', streak);
+    }
+    
+    // Update the display
+    document.getElementById('streakDisplay').textContent = streak;
+}
+
 // Timer functions
 function startTimer() {
     clearInterval(timerInterval);
@@ -239,6 +271,36 @@ async function endGame() {
         wordElement.innerHTML = `${word} <span style="color: var(--primary-color)">+${wordScore}</span>`;
         finalWordList.appendChild(wordElement);
     });
+
+    // Update streak
+    const today = new Date().toLocaleDateString();
+    const lastPlayDate = localStorage.getItem('lastPlayDate');
+    let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
+    
+    if (lastPlayDate !== today) {
+        // It's a new day
+        if (lastPlayDate) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (lastPlayDate !== yesterday.toLocaleDateString()) {
+                // Streak broken - they missed a day
+                streak = 1;
+            } else {
+                // Continued streak
+                streak++;
+            }
+        } else {
+            // First time playing
+            streak = 1;
+        }
+        
+        // Save the new date and streak
+        localStorage.setItem('lastPlayDate', today);
+        localStorage.setItem('gameStreak', streak.toString());
+        
+        // Update streak display
+        document.getElementById('streakDisplay').textContent = streak;
+    }
 
     document.getElementById("endScreen").style.display = "flex";
 
