@@ -329,6 +329,13 @@
     padding: 10px;
 }
 
+#liveScore {
+    font-size: clamp(18px, 4vw, 24px);
+    color: var(--primary-color);
+    margin-top: 10px;
+    font-weight: bold;
+}
+
 #finalWordList p {
     background: #f8f9fa;
     padding: 8px;
@@ -380,6 +387,7 @@
         <div id="game" class="game-container">
             <h1 id="letters">AB</h1>
             <p id="timer">Time left: 90</p>
+            <div id="liveScore">Current Score: 0</div>
             <div class="progress-container">
                 <div class="progress-bar" id="timeProgress"></div>
             </div>
