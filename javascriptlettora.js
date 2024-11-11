@@ -6,9 +6,6 @@ let words = [];
 let gameRunning = false;
 let timerInterval;
 
-const SERVER_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000'
-    : 'https://dinaswordgame.com';
 // Wait for DOM to be fully loaded
 window.onload = function() {
     updateHighScoreDisplay();
@@ -238,12 +235,6 @@ async function endGame() {
 
     document.getElementById("endScreen").style.display = "flex"; // Show the end screen
 
-    // Update top score in the backend if current score is a new high
-    await setTopScore(score);
-
-    // Fetch and display the top score of the day
-    await fetchTopScore();
-
     // Update the personal high score display at the top of the screen
     updateHighScoreDisplay(); 
 }
@@ -282,36 +273,6 @@ function createConfetti() {
         });
 
         animation.onfinish = () => confetti.remove();
-    }
-}
-
-async function fetchTopScore() {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/getTopScore`);
-        const data = await response.json();
-        document.getElementById('topScoreOfDay').textContent = data.topScore;
-    } catch (error) {
-        console.error("Error fetching top score:", error);
-        // Show a more user-friendly error
-        document.getElementById('topScoreOfDay').textContent = 'Unable to load';
-    }
-}
-
-async function setTopScore(score) {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/setTopScore`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ score })
-        });
-        const data = await response.json();
-        
-        // Update displayed top score if we got a response
-        if (data.currentTopScore) {
-            document.getElementById('topScoreOfDay').textContent = data.currentTopScore;
-        }
-    } catch (error) {
-        console.error("Error setting top score:", error);
     }
 }
 
