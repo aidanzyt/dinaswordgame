@@ -43,10 +43,9 @@ window.onload = function() {
     
         // Validate word with Datamuse API
         if (await isValidWord(word)) {
-            score += calculateWordScore(word); // Update the score
+            score += calculateWordScore(word); // Changed from score++
             words.push(word);
             displayWord(word);
-            updateLiveScore(); // Update live score display
             input.value = "";
             input.classList.remove("invalid");
         } else {
@@ -55,7 +54,7 @@ window.onload = function() {
         }
     
         input.focus();
-    };    
+    };
 
     window.closeEndScreen = function() {
         document.getElementById("endScreen").style.display = "none";
@@ -188,10 +187,6 @@ function startTimer() {
 function updateProgressBar(timeRemaining) {
     const progress = (timeRemaining / 90) * 100;
     document.getElementById('timeProgress').style.transform = `scaleX(${progress / 100})`;
-}
-
-function updateLiveScore() {
-    document.getElementById("liveScore").textContent = `Current Score: ${score}`;
 }
 
 function showError(message) {
