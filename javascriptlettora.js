@@ -214,7 +214,7 @@ function updateHighScoreDisplay() {
     document.getElementById('highScoreLetters').textContent = highScoreLetters;
 }
 
-function endGame() {
+async function endGame() {
     gameRunning = false; // Stop the game
     document.getElementById("finalScore").textContent = score;
 
@@ -232,19 +232,13 @@ function endGame() {
 
     document.getElementById("endScreen").style.display = "flex"; // Show the end screen
 
-    // Check for a new high score and update it if applicable
-    const highScore = localStorage.getItem("lettoraHighScore") || 0;
-    if (score > highScore) {
-        // Update high score in localStorage
-        localStorage.setItem("lettoraHighScore", score);
-        // Save the letters associated with the new high score
-        localStorage.setItem("lettoraHighScoreLetters", letters.join("")); // Store current letters
+    // Update top score in the backend if current score is a new high
+    await setTopScore(score);
 
-        document.getElementById("finalScore").textContent += " (New High Score!)"; // Notify player of new high score
-        createConfetti(); // Trigger confetti animation for celebration
-    }
+    // Fetch and display the top score of the day
+    await fetchTopScore();
 
-    // Update the high score display at the top of the screen with the new values
+    // Update the personal high score display at the top of the screen
     updateHighScoreDisplay(); 
 }
 
@@ -281,6 +275,28 @@ function createConfetti() {
         });
 
         animation.onfinish = () => confetti.remove();
+    }
+}
+
+async function fetchTopScore() {
+    try {
+        const response = await fetch('http://localhost:3000/api/getTopScore'); // Ensure the URL is correct
+        const data = await response.json();
+        document.getElementById('topScoreOfDay').textContent = data.topScore;
+    } catch (error) {
+        console.error("Error fetching top score:", error);
+    }
+}
+
+async function setTopScore(score) {
+    try {
+        await fetch('http://localhost:3000/api/setTopScore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score })
+        });
+    } catch (error) {
+        console.error("Error setting top score:", error);
     }
 }
 
