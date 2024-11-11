@@ -218,14 +218,21 @@ function updateHighScoreDisplay() {
 }
 
 async function endGame() {
-    gameRunning = false; // Stop the game
+    gameRunning = false;
     document.getElementById("finalScore").textContent = score;
+
+    // Check and update high score
+    const currentHighScore = parseInt(localStorage.getItem("lettoraHighScore")) || 0;
+    if (score > currentHighScore) {
+        localStorage.setItem("lettoraHighScore", score.toString());
+        localStorage.setItem("lettoraHighScoreLetters", letters.join('')); // Save the letters used
+        createConfetti(); // Celebrate new high score
+    }
 
     // Display final word list
     const finalWordList = document.getElementById("finalWordList");
-    finalWordList.innerHTML = ''; // Clear previous list
+    finalWordList.innerHTML = '';
 
-    // Display each word the player entered with its score
     words.forEach(word => {
         const wordElement = document.createElement("p");
         const wordScore = calculateWordScore(word);
@@ -233,14 +240,15 @@ async function endGame() {
         finalWordList.appendChild(wordElement);
     });
 
-    document.getElementById("endScreen").style.display = "flex"; // Show the end screen
+    document.getElementById("endScreen").style.display = "flex";
 
-    // Update the personal high score display at the top of the screen
-    updateHighScoreDisplay(); 
+    // Update the personal high score display
+    updateHighScoreDisplay();
 }
 
+// Also update the resetGame function to properly show current high score
 function resetGame() {
-    timeLeft = 90;
+    timeLeft = 90; 
     score = 0;
     words = [];
     document.getElementById("wordsList").innerHTML = "";
@@ -250,8 +258,8 @@ function resetGame() {
     document.getElementById("wordInput").value = "";
     document.getElementById("wordInput").classList.remove("invalid");
     document.getElementById("errorMessage").textContent = "";
-    document.getElementById("currentScore").textContent = "Score: 0"; // Add this line
-    updateHighScoreDisplay();
+    document.getElementById("currentScore").textContent = "Score: 0";
+    updateHighScoreDisplay(); // Make sure high score is displayed correctly
 }
 
 function createConfetti() {
