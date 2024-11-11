@@ -6,6 +6,8 @@ let words = [];
 let gameRunning = false;
 let timerInterval;
 
+const SERVER_URL = 'https://dinaswordgame.com';
+
 // Wait for DOM to be fully loaded
 window.onload = function() {
     updateHighScoreDisplay();
@@ -280,21 +282,29 @@ function createConfetti() {
 
 async function fetchTopScore() {
     try {
-        const response = await fetch('http://localhost:3000/api/getTopScore'); // Ensure the URL is correct
+        const response = await fetch(`${SERVER_URL}/api/getTopScore`);
         const data = await response.json();
         document.getElementById('topScoreOfDay').textContent = data.topScore;
     } catch (error) {
         console.error("Error fetching top score:", error);
+        // Show a more user-friendly error
+        document.getElementById('topScoreOfDay').textContent = 'Unable to load';
     }
 }
 
 async function setTopScore(score) {
     try {
-        await fetch('http://localhost:3000/api/setTopScore', {
+        const response = await fetch(`${SERVER_URL}/api/setTopScore`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ score })
         });
+        const data = await response.json();
+        
+        // Update displayed top score if we got a response
+        if (data.currentTopScore) {
+            document.getElementById('topScoreOfDay').textContent = data.currentTopScore;
+        }
     } catch (error) {
         console.error("Error setting top score:", error);
     }
