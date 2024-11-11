@@ -6,8 +6,9 @@ let words = [];
 let gameRunning = false;
 let timerInterval;
 
-const SERVER_URL = 'https://dinaswordgame.com';
-
+const SERVER_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000'
+    : 'https://dinaswordgame.com';
 // Wait for DOM to be fully loaded
 window.onload = function() {
     updateHighScoreDisplay();
@@ -35,7 +36,6 @@ window.onload = function() {
         let input = document.getElementById("wordInput");
         let word = input.value.toLowerCase().trim();
     
-        // Check if word has already been used
         if (words.includes(word)) {
             showError("You've already used that word!");
             input.value = "";
@@ -43,9 +43,13 @@ window.onload = function() {
             return;
         }
     
-        // Validate word with Datamuse API
         if (await isValidWord(word)) {
-            score += calculateWordScore(word); // Changed from score++
+            score += calculateWordScore(word);
+            document.getElementById("currentScore").textContent = `Score: ${score}`; // Add this line
+            document.getElementById("currentScore").style.animation = 'none'; // Reset animation
+            setTimeout(() => {
+                document.getElementById("currentScore").style.animation = ''; // Restart animation
+            }, 10);
             words.push(word);
             displayWord(word);
             input.value = "";
@@ -57,7 +61,7 @@ window.onload = function() {
     
         input.focus();
     };
-
+    
     window.closeEndScreen = function() {
         document.getElementById("endScreen").style.display = "none";
         document.getElementById("game").style.display = "none";
@@ -255,7 +259,8 @@ function resetGame() {
     document.getElementById("wordInput").value = "";
     document.getElementById("wordInput").classList.remove("invalid");
     document.getElementById("errorMessage").textContent = "";
-    updateHighScoreDisplay(); // Ensure high score display is updated each time
+    document.getElementById("currentScore").textContent = "Score: 0"; // Add this line
+    updateHighScoreDisplay();
 }
 
 function createConfetti() {
