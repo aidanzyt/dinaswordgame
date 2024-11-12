@@ -455,20 +455,6 @@ function shareScore() {
     const letters = localStorage.getItem("lettoraHighScoreLetters") || "AB";
     const scoreNum = parseInt(score);
 
-    // Create emoji graph based on score
-    let emojiGraph = "📊 ";
-    if (scoreNum < 50) {
-        emojiGraph += "▁▁▂▁";
-    } else if (scoreNum < 100) {
-        emojiGraph += "▁▂▂▃";
-    } else if (scoreNum < 150) {
-        emojiGraph += "▂▃▃▅";
-    } else if (scoreNum < 200) {
-        emojiGraph += "▃▅▅█";
-    } else {
-        emojiGraph += "█████";
-    }
-
     // Add performance emoji
     let performanceEmoji;
     if (scoreNum < 50) performanceEmoji = "🌱";
@@ -484,22 +470,21 @@ function shareScore() {
         `${emojiGraph}`;
     
     const shareUrl = window.location.href;
-    const fullShareText = shareText + "\nPlay at: " + shareUrl;
 
     // Use native sharing for mobile
     if (navigator.share) {
         navigator.share({
             title: "Dina's Word Game",
-            text: fullShareText,
-            url: shareUrl
+            text: shareText,
+            url: shareUrl  // URL will be added automatically by the share API
         }).catch(error => console.error("Error sharing", error));
     } else {
         // Fallback for non-mobile devices or unsupported browsers
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
         const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
-        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(fullShareText)}`;
-        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(fullShareText)}`;
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`;
+        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(shareText + "\n\nPlay at: " + shareUrl)}`;
 
         // Replace button content with social media links for desktop
         document.getElementById("shareButton").innerHTML = `
