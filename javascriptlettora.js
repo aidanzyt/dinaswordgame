@@ -3,19 +3,19 @@ let letters = getDailyLetters();  // Use daily letters instead of random ones
 let timeLeft = 90;
 let score = 0;
 let words = [];
+let currentTheme = 0;
 let gameRunning = false;
 let timerInterval;
 let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
 let lastPlayDate = localStorage.getItem('lastPlayDate');
-let gameStats = {
-    gamesPlayed: 0,
-    totalWords: 0,
-    totalScore: 0,
-    longestWord: '',
-    scoreHistory: [],
-    wordLengthDistribution: {},
-    recentGames: []
-};
+
+const colorThemes = [
+    { name: '🌸 Rose', background: 'linear-gradient(120deg, #ffffff 0%, #f7d7ff 100%)' },
+    { name: '🌊 Ocean', background: 'linear-gradient(120deg, #ffffff 0%, #d7f0ff 100%)' },
+    { name: '🌿 Mint', background: 'linear-gradient(120deg, #ffffff 0%, #d7fff0 100%)' },
+    { name: '🍑 Peach', background: 'linear-gradient(120deg, #ffffff 0%, #ffeae0 100%)' },
+    { name: '💜 Lavender', background: 'linear-gradient(120deg, #ffffff 0%, #e0e0ff 100%)' }
+];
 
 // Wait for DOM to be fully loaded
 window.onload = function() {
@@ -29,6 +29,13 @@ window.onload = function() {
         document.getElementById("game").style.display = "flex";
         document.getElementById('streakDisplay').textContent = streak;
         gameRunning = true;
+
+        const savedTheme = localStorage.getItem('preferredTheme');
+    if (savedTheme !== null) {
+        currentTheme = parseInt(savedTheme);
+        const theme = colorThemes[currentTheme];
+        document.body.style.background = theme.background;
+    }
 
         // Display daily letters
         const lettersElement = document.getElementById("letters");
@@ -180,6 +187,20 @@ function showPopupMessage(message) {
 
 function calculateWordScore(word) {
     return Math.max(1, Math.floor(word.length * 1.5));
+}
+
+function cycleTheme() {
+    currentTheme = (currentTheme + 1) % colorThemes.length;
+    const theme = colorThemes[currentTheme];
+    
+    // Apply the theme
+    document.body.style.background = theme.background;
+    
+    // Show a little message
+    showPopupMessage(theme.name);
+    
+    // Save preference
+    localStorage.setItem('preferredTheme', currentTheme);
 }
 
 // Show success flash animation
