@@ -451,9 +451,13 @@ function createConfetti() {
 }
 
 function shareScore() {
+    // Check if score and letters are defined and accessible
+    console.log("Current Score:", score);  // Debugging check
+    console.log("Letters:", letters);      // Debugging check
+
     // Use the current score (not the high score)
     const currentScore = score;
-    const letters = letters.join('');  // Convert letters array to string for sharing
+    const lettersText = letters.join('');  // Ensure letters array is converted to a string
 
     // Add performance emoji based on current score
     let performanceEmoji;
@@ -465,7 +469,7 @@ function shareScore() {
 
     // Create formatted share text without high score
     const shareText = `Dina's Word Game ${performanceEmoji}\n` +
-        `Letters: ${letters}\n` +
+        `Letters: ${lettersText}\n` +
         `Score: ${currentScore}`;
     
     const shareUrl = window.location.href;
@@ -476,7 +480,7 @@ function shareScore() {
         navigator.share({
             title: "Dina's Word Game",
             text: fullShareText  // Pass the full text without specifying the URL separately
-        }).catch(error => console.error("Error sharing", error));
+        }).catch(error => console.error("Error sharing:", error));
     } else {
         // Fallback for non-mobile devices or unsupported browsers
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullShareText)}`;
