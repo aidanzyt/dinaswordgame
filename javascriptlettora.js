@@ -11,6 +11,7 @@ let lastPlayDate = localStorage.getItem('lastPlayDate');
 // Wait for DOM to be fully loaded
 window.onload = function() {
     updateHighScoreDisplay();
+    initializeStreak();
 
     window.startGame = function() {
         resetGame();
@@ -272,7 +273,7 @@ async function endGame() {
         finalWordList.appendChild(wordElement);
     });
 
-    // Update streak
+    // Update streak - improved logic
     const today = new Date().toLocaleDateString();
     const lastPlayDate = localStorage.getItem('lastPlayDate');
     let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
@@ -297,11 +298,10 @@ async function endGame() {
         // Save the new date and streak
         localStorage.setItem('lastPlayDate', today);
         localStorage.setItem('gameStreak', streak.toString());
-        
-        // Update streak display
-        document.getElementById('streakDisplay').textContent = streak;
     }
-
+    
+    // Always update the display
+    document.getElementById('streakDisplay').textContent = streak;
     document.getElementById("endScreen").style.display = "flex";
 
     // Update the personal high score display
@@ -322,6 +322,11 @@ function resetGame() {
     document.getElementById("errorMessage").textContent = "";
     document.getElementById("currentScore").textContent = "Score: 0";
     updateHighScoreDisplay(); // Make sure high score is displayed correctly
+}
+
+function initializeStreak() {
+    const streak = parseInt(localStorage.getItem('gameStreak')) || 0;
+    document.getElementById('streakDisplay').textContent = streak;
 }
 
 function createConfetti() {
