@@ -466,9 +466,8 @@ function shareScore() {
     // Create formatted share text
     const shareText = `Dina's Word Game ${performanceEmoji}\n` +
         `Letters: ${letters}\n` +
-        `Score: ${score}\n` +
-        `${emojiGraph}`;
-    
+        `Score: ${score}`;
+
     const shareUrl = window.location.href;
 
     // Use native sharing for mobile
@@ -477,22 +476,31 @@ function shareScore() {
             title: "Dina's Word Game",
             text: shareText,
             url: shareUrl  // URL will be added automatically by the share API
-        }).catch(error => console.error("Error sharing", error));
+        }).catch(error => {
+            console.error("Error sharing", error);
+            // Show fallback links if native sharing fails
+            showFallbackShareLinks(shareText, shareUrl);
+        });
     } else {
-        // Fallback for non-mobile devices or unsupported browsers
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
-        const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
-        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`;
-        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(shareText + "\n\nPlay at: " + shareUrl)}`;
-
-        // Replace button content with social media links for desktop
-        document.getElementById("shareButton").innerHTML = `
-            <a href="${twitterUrl}" target="_blank" style="color: #1DA1F2; margin-right: 10px;">Twitter</a>
-            <a href="${facebookUrl}" target="_blank" style="color: #4267B2; margin-right: 10px;">Facebook</a>
-            <a href="${linkedinUrl}" target="_blank" style="color: #0077B5; margin-right: 10px;">LinkedIn</a>
-            <a href="${whatsappUrl}" target="_blank" style="color: #25D366; margin-right: 10px;">WhatsApp</a>
-            <a href="${mailtoUrl}" style="color: #D44638;">Email</a>
-        `;
+        // Show fallback links for non-mobile devices or unsupported browsers
+        showFallbackShareLinks(shareText, shareUrl);
     }
+}
+
+// Fallback function for unsupported browsers or when navigator.share fails
+function showFallbackShareLinks(shareText, shareUrl) {
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+    const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(shareText + "\n\nPlay at: " + shareUrl)}`;
+
+    // Replace button content with social media links for desktop
+    document.getElementById("shareButton").innerHTML = `
+        <a href="${twitterUrl}" target="_blank" style="color: #1DA1F2; margin-right: 10px;">Twitter</a>
+        <a href="${facebookUrl}" target="_blank" style="color: #4267B2; margin-right: 10px;">Facebook</a>
+        <a href="${linkedinUrl}" target="_blank" style="color: #0077B5; margin-right: 10px;">LinkedIn</a>
+        <a href="${whatsappUrl}" target="_blank" style="color: #25D366; margin-right: 10px;">WhatsApp</a>
+        <a href="${mailtoUrl}" style="color: #D44638;">Email</a>
+    `;
 }
