@@ -448,6 +448,21 @@
     z-index: 100;
 }
 
+#gameHeader {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+}
+
+#gameHeader button {
+    padding: 5px 10px;
+    background-color: #ffcccc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 @media (max-width: 480px) {
     .streak-counter {
         top: auto;
@@ -486,6 +501,9 @@
             <div class="progress-container">
                 <div class="progress-bar" id="timeProgress"></div>
             </div>
+            <div id="gameHeader">
+                <button onclick="returnToHome()">🏠 Return to Home</button>
+            </div>            
             <input type="text" id="wordInput" placeholder="Enter word" autocomplete="off">
             <div id="errorMessage"></div>
             <button id="submitButton" onclick="submitWord()">Submit</button>
