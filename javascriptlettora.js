@@ -451,22 +451,22 @@ function createConfetti() {
 }
 
 function shareScore() {
-    const score = localStorage.getItem("lettoraHighScore") || 0;
-    const letters = localStorage.getItem("lettoraHighScoreLetters") || "AB";
-    const scoreNum = parseInt(score);
+    // Use the current score (not the high score)
+    const currentScore = score;
+    const letters = letters.join('');  // Convert letters array to string for sharing
 
-    // Add performance emoji based on score
+    // Add performance emoji based on current score
     let performanceEmoji;
-    if (scoreNum < 50) performanceEmoji = "🌱";
-    else if (scoreNum < 100) performanceEmoji = "🌿";
-    else if (scoreNum < 150) performanceEmoji = "🌳";
-    else if (scoreNum < 200) performanceEmoji = "🏆";
+    if (currentScore < 50) performanceEmoji = "🌱";
+    else if (currentScore < 100) performanceEmoji = "🌿";
+    else if (currentScore < 150) performanceEmoji = "🌳";
+    else if (currentScore < 200) performanceEmoji = "🏆";
     else performanceEmoji = "👑";
 
-    // Create formatted share text without the graph
+    // Create formatted share text without high score
     const shareText = `Dina's Word Game ${performanceEmoji}\n` +
         `Letters: ${letters}\n` +
-        `Score: ${score}`;
+        `Score: ${currentScore}`;
     
     const shareUrl = window.location.href;
     const fullShareText = shareText + "\nPlay at: " + shareUrl;
