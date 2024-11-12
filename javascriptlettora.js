@@ -7,6 +7,15 @@ let gameRunning = false;
 let timerInterval;
 let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
 let lastPlayDate = localStorage.getItem('lastPlayDate');
+let gameStats = {
+    gamesPlayed: 0,
+    totalWords: 0,
+    totalScore: 0,
+    longestWord: '',
+    scoreHistory: [],
+    wordLengthDistribution: {},
+    recentGames: []
+};
 
 // Wait for DOM to be fully loaded
 window.onload = function() {
@@ -53,6 +62,7 @@ window.onload = function() {
             }, 10);
             words.push(word);
             displayWord(word);
+            showWordPraise(word);
             input.value = "";
             input.classList.remove("invalid");
         } else {
@@ -159,6 +169,14 @@ function getDailyLetters() {
     return letters;
 }
 
+function showPopupMessage(message) {
+    const popup = document.createElement('div');
+    popup.className = 'popup-message';
+    popup.textContent = message;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 1500);
+}
+
 function calculateWordScore(word) {
     return Math.max(1, Math.floor(word.length * 1.5));
 }
@@ -223,6 +241,36 @@ function startTimer() {
 function updateProgressBar(timeRemaining) {
     const progress = (timeRemaining / 90) * 100;
     document.getElementById('timeProgress').style.transform = `scaleX(${progress / 100})`;
+}
+
+function showWordPraise(word) {
+    if (word.length >= 10) {
+        const longWordPraises = [
+            "INCREDIBLE! 🎯🎯🎯",
+            "WORD MASTER! 👑",
+            "PHENOMENAL! 🌟✨💫",
+            "VOCABULARY GENIUS! 🧠",
+            "OUTSTANDING! 🏆",
+            "SPECTACULAR! 🎪✨",
+            "LEGENDARY! 🔥🔥🔥",
+            "IMPRESSIVE! 🌈🌟",
+            "EXTRAORDINARY! ⭐️🎯",
+            "MAGNIFICENT! 🎉🎊",
+            "BRILLIANT! 💫✨",
+            "AMAZING FIND! 🎯💫",
+            "WORDSMITH! 📚✨",
+            "SPECTACULAR! 🌟🎨",
+            "GENIUS LEVEL! 🧠💫",
+            "TOP TIER WORD! 🏆✨",
+            "MASTERFUL! 👑💫",
+            "EXCEPTIONAL! 🌟🎯",
+            "REMARKABLE! ⭐️🎉",
+            "OUTSTANDING! 🔥💫"
+        ];
+        
+        const message = longWordPraises[Math.floor(Math.random() * longWordPraises.length)];
+        showPopupMessage(message);
+    }
 }
 
 function showError(message) {
