@@ -11,11 +11,11 @@ let lastPlayDate = localStorage.getItem('lastPlayDate');
 let todaysBest = parseInt(localStorage.getItem('todaysBest')) || 0;
 
 const colorThemes = [
-    { name: '🌸 Rose', background: 'linear-gradient(120deg, #ffffff 0%, #f7d7ff 100%)' },
-    { name: '🌊 Ocean', background: 'linear-gradient(120deg, #ffffff 0%, #d7f0ff 100%)' },
-    { name: '🌿 Mint', background: 'linear-gradient(120deg, #ffffff 0%, #d7fff0 100%)' },
-    { name: '🍑 Peach', background: 'linear-gradient(120deg, #ffffff 0%, #ffeae0 100%)' },
-    { name: '💜 Lavender', background: 'linear-gradient(120deg, #ffffff 0%, #e0e0ff 100%)' }
+    { name: '🏖️ Beach', background: 'linear-gradient(120deg, #fdeb93 0%, #f5b785 100%)' },
+    { name: '💼 PwC', background: 'linear-gradient(120deg, #ffffff 0%, #d35400 100%)' },
+    { name: '🇲🇪 Montenegro', background: 'linear-gradient(120deg, #cb3f3f 0%, #ffe900 100%)' },
+    { name: '🍂 Crunchy Leaves', background: 'linear-gradient(120deg, #ffcc80 0%, #d84315 100%)' },
+    { name: '🥛 Doogh', background: 'linear-gradient(120deg, #e0f7fa 0%, #80deea 100%)' }
 ];
 
 // Wait for DOM to be fully loaded
