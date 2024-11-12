@@ -8,6 +8,7 @@ let gameRunning = false;
 let timerInterval;
 let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
 let lastPlayDate = localStorage.getItem('lastPlayDate');
+let todaysBest = parseInt(localStorage.getItem('todaysBest')) || 0;
 
 const colorThemes = [
     { name: '🌸 Rose', background: 'linear-gradient(120deg, #ffffff 0%, #f7d7ff 100%)' },
@@ -349,6 +350,18 @@ async function endGame() {
         createConfetti(); // Celebrate new high score
     }
 
+    // Update today's best score
+    const today = new Date().toLocaleDateString();
+    if (localStorage.getItem('todaysBestDate') !== today) {
+        // New day, reset best
+        todaysBest = score;
+        localStorage.setItem('todaysBestDate', today);
+    } else if (score > todaysBest) {
+        todaysBest = score;
+    }
+    localStorage.setItem('todaysBest', todaysBest.toString());
+    document.getElementById("todaysBestScore").textContent = todaysBest;
+
     // Display final word list
     const finalWordList = document.getElementById("finalWordList");
     finalWordList.innerHTML = '';
@@ -361,7 +374,6 @@ async function endGame() {
     });
 
     // Update streak - improved logic
-    const today = new Date().toLocaleDateString();
     const lastPlayDate = localStorage.getItem('lastPlayDate');
     let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
     
@@ -441,23 +453,53 @@ function createConfetti() {
 function shareScore() {
     const score = localStorage.getItem("lettoraHighScore") || 0;
     const letters = localStorage.getItem("lettoraHighScoreLetters") || "AB";
-    const shareText = `I scored ${score} points in Dina's Word Game with letters ${letters}! Try to beat my score!`;
+    const scoreNum = parseInt(score);
+
+    // Create emoji graph based on score
+    let emojiGraph = "📊 ";
+    if (scoreNum < 50) {
+        emojiGraph += "▁▁▂▁";
+    } else if (scoreNum < 100) {
+        emojiGraph += "▁▂▂▃";
+    } else if (scoreNum < 150) {
+        emojiGraph += "▂▃▃▅";
+    } else if (scoreNum < 200) {
+        emojiGraph += "▃▅▅█";
+    } else {
+        emojiGraph += "█████";
+    }
+
+    // Add performance emoji
+    let performanceEmoji;
+    if (scoreNum < 50) performanceEmoji = "🌱";
+    else if (scoreNum < 100) performanceEmoji = "🌿";
+    else if (scoreNum < 150) performanceEmoji = "🌳";
+    else if (scoreNum < 200) performanceEmoji = "🏆";
+    else performanceEmoji = "👑";
+
+    // Create formatted share text
+    const shareText = `Dina's Word Game ${performanceEmoji}\n` +
+        `Letters: ${letters}\n` +
+        `Score: ${score}\n` +
+        `${emojiGraph}`;
+    
     const shareUrl = window.location.href;
+    const fullShareText = shareText + "\nPlay at: " + shareUrl;
 
     // Use native sharing for mobile
     if (navigator.share) {
         navigator.share({
             title: "Dina's Word Game",
-            text: shareText,
+            text: fullShareText,
             url: shareUrl
         }).catch(error => console.error("Error sharing", error));
     } else {
         // Fallback for non-mobile devices or unsupported browsers
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
         const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
-        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
-        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(shareText + " " + shareUrl)}`;
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(fullShareText)}`;
+        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(fullShareText)}`;
 
         // Replace button content with social media links for desktop
         document.getElementById("shareButton").innerHTML = `
