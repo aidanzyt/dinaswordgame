@@ -451,12 +451,11 @@ function createConfetti() {
 }
 
 function shareScore() {
-    // Use the current score, not the high score
-    const currentScore = score;
-    const letters = letters.join('');  // Use current letters from the game state
-    const scoreNum = parseInt(currentScore);
+    const score = localStorage.getItem("lettoraHighScore") || 0;
+    const letters = localStorage.getItem("lettoraHighScoreLetters") || "AB";
+    const scoreNum = parseInt(score);
 
-    // Add performance emoji based on the current score
+    // Add performance emoji based on score
     let performanceEmoji;
     if (scoreNum < 50) performanceEmoji = "🌱";
     else if (scoreNum < 100) performanceEmoji = "🌿";
@@ -464,26 +463,35 @@ function shareScore() {
     else if (scoreNum < 200) performanceEmoji = "🏆";
     else performanceEmoji = "👑";
 
-    // Create formatted share text
+    // Create formatted share text without the graph
     const shareText = `Dina's Word Game ${performanceEmoji}\n` +
         `Letters: ${letters}\n` +
-        `Score: ${currentScore}`;
-
+        `Score: ${score}`;
+    
     const shareUrl = window.location.href;
+    const fullShareText = shareText + "\nPlay at: " + shareUrl;
 
     // Use native sharing for mobile
     if (navigator.share) {
         navigator.share({
             title: "Dina's Word Game",
-            text: shareText,
-            url: shareUrl  // URL will be added automatically by the share API
-        }).catch(error => {
-            console.error("Error sharing", error);
-            // Show fallback links if native sharing fails
-            showFallbackShareLinks(shareText, shareUrl);
-        });
+            text: fullShareText  // Pass the full text without specifying the URL separately
+        }).catch(error => console.error("Error sharing", error));
     } else {
-        // Show fallback links for non-mobile devices or unsupported browsers
-        showFallbackShareLinks(shareText, shareUrl);
+        // Fallback for non-mobile devices or unsupported browsers
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullShareText)}`;
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(fullShareText)}`;
+        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(fullShareText)}`;
+
+        // Replace button content with social media links for desktop
+        document.getElementById("shareButton").innerHTML = `
+            <a href="${twitterUrl}" target="_blank" style="color: #1DA1F2; margin-right: 10px;">Twitter</a>
+            <a href="${facebookUrl}" target="_blank" style="color: #4267B2; margin-right: 10px;">Facebook</a>
+            <a href="${linkedinUrl}" target="_blank" style="color: #0077B5; margin-right: 10px;">LinkedIn</a>
+            <a href="${whatsappUrl}" target="_blank" style="color: #25D366; margin-right: 10px;">WhatsApp</a>
+            <a href="${mailtoUrl}" style="color: #D44638;">Email</a>
+        `;
     }
 }
