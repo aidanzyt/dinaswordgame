@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <!-- Background -->
+    <rect 
+        x="0" 
+        y="0" 
+        width="32" 
+        height="32" 
+        fill="#4CAF50" 
+        rx="8"
+    />
+
+    <!-- Main Tile Group -->
+    <g transform="translate(16, 16)">
+        <!-- Bottom tile -->
+        <rect 
+            x="-11" 
+            y="-6" 
+            width="10" 
+            height="10" 
+            fill="#ffffff" 
+            rx="2"
+            transform="rotate(-5)"
+        />
+        
+        <!-- Middle tile -->
+        <rect 
+            x="-5" 
+            y="-8" 
+            width="10" 
+            height="10" 
+            fill="#ffffff" 
+            rx="2"
+            transform="rotate(5)"
+        />
+        
+        <!-- Top tile -->
+        <rect 
+            x="1" 
+            y="-4" 
+            width="10" 
+            height="10" 
+            fill="#ffffff" 
+            rx="2"
+        />
+
+        <!-- Letters -->
+        <text 
+            x="-6" 
+            y="0" 
+            font-family="Arial Black, sans-serif" 
+            font-size="6" 
+            fill="#4CAF50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            transform="rotate(-5)"
+        >D</text>
+        
+        <text 
+            x="0" 
+            y="-2" 
+            font-family="Arial Black, sans-serif" 
+            font-size="6" 
+            fill="#4CAF50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            transform="rotate(5)"
+        >W</text>
+        
+        <text 
+            x="6" 
+            y="2" 
+            font-family="Arial Black, sans-serif" 
+            font-size="6" 
+            fill="#4CAF50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+        >G</text>
+    </g>
+</svg>
