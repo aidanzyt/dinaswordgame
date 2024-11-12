@@ -5,6 +5,7 @@ let score = 0;
 let words = [];
 let currentTheme = 0;
 let gameRunning = false;
+let manuallyExited = false;
 let timerInterval;
 let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
 let lastPlayDate = localStorage.getItem('lastPlayDate');
@@ -319,6 +320,14 @@ function showError(message) {
     setTimeout(() => errorDiv.textContent = "", 2000);
 }
 
+function returnToHome() {
+    manuallyExited = true;  // Set flag to true when exiting manually
+    document.getElementById("game").style.display = "none";       // Hide the game screen
+    document.getElementById("introScreen").style.display = "flex"; // Show the home screen
+    document.getElementById("homeLogo").style.display = "block";   // Ensure home logo is visible
+    gameRunning = false;                                           // Stop the game if it’s running
+}
+
 function displayWord(word) {
     const wordElement = document.createElement("p");
     wordElement.textContent = word;
@@ -340,68 +349,75 @@ function updateHighScoreDisplay() {
 
 async function endGame() {
     gameRunning = false;
-    document.getElementById("finalScore").textContent = score;
 
-    // Check and update high score
-    const currentHighScore = parseInt(localStorage.getItem("lettoraHighScore")) || 0;
-    if (score > currentHighScore) {
-        localStorage.setItem("lettoraHighScore", score.toString());
-        localStorage.setItem("lettoraHighScoreLetters", letters.join('')); // Save the letters used
-        createConfetti(); // Celebrate new high score
-    }
+    // Only display the score and other end-game elements if the game was not manually exited
+    if (!manuallyExited) {
+        document.getElementById("finalScore").textContent = score;
 
-    // Update today's best score
-    const today = new Date().toLocaleDateString();
-    if (localStorage.getItem('todaysBestDate') !== today) {
-        // New day, reset best
-        todaysBest = score;
-        localStorage.setItem('todaysBestDate', today);
-    } else if (score > todaysBest) {
-        todaysBest = score;
-    }
-    localStorage.setItem('todaysBest', todaysBest.toString());
-    document.getElementById("todaysBestScore").textContent = todaysBest;
+        // Check and update high score
+        const currentHighScore = parseInt(localStorage.getItem("lettoraHighScore")) || 0;
+        if (score > currentHighScore) {
+            localStorage.setItem("lettoraHighScore", score.toString());
+            localStorage.setItem("lettoraHighScoreLetters", letters.join('')); // Save the letters used
+            createConfetti(); // Celebrate new high score
+        }
 
-    // Display final word list
-    const finalWordList = document.getElementById("finalWordList");
-    finalWordList.innerHTML = '';
+        // Update today's best score
+        const today = new Date().toLocaleDateString();
+        if (localStorage.getItem('todaysBestDate') !== today) {
+            // New day, reset best
+            todaysBest = score;
+            localStorage.setItem('todaysBestDate', today);
+        } else if (score > todaysBest) {
+            todaysBest = score;
+        }
+        localStorage.setItem('todaysBest', todaysBest.toString());
+        document.getElementById("todaysBestScore").textContent = todaysBest;
 
-    words.forEach(word => {
-        const wordElement = document.createElement("p");
-        const wordScore = calculateWordScore(word);
-        wordElement.innerHTML = `${word} <span style="color: var(--primary-color)">+${wordScore}</span>`;
-        finalWordList.appendChild(wordElement);
-    });
+        // Display final word list
+        const finalWordList = document.getElementById("finalWordList");
+        finalWordList.innerHTML = '';
 
-    // Update streak - improved logic
-    const lastPlayDate = localStorage.getItem('lastPlayDate');
-    let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
-    
-    if (lastPlayDate !== today) {
-        // It's a new day
-        if (lastPlayDate) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            if (lastPlayDate !== yesterday.toLocaleDateString()) {
-                // Streak broken - they missed a day
-                streak = 1;
+        words.forEach(word => {
+            const wordElement = document.createElement("p");
+            const wordScore = calculateWordScore(word);
+            wordElement.innerHTML = `${word} <span style="color: var(--primary-color)">+${wordScore}</span>`;
+            finalWordList.appendChild(wordElement);
+        });
+
+        // Update streak - improved logic
+        const lastPlayDate = localStorage.getItem('lastPlayDate');
+        let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
+        
+        if (lastPlayDate !== today) {
+            // It's a new day
+            if (lastPlayDate) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (lastPlayDate !== yesterday.toLocaleDateString()) {
+                    // Streak broken - they missed a day
+                    streak = 1;
+                } else {
+                    // Continued streak
+                    streak++;
+                }
             } else {
-                // Continued streak
-                streak++;
+                // First time playing
+                streak = 1;
             }
-        } else {
-            // First time playing
-            streak = 1;
+            
+            // Save the new date and streak
+            localStorage.setItem('lastPlayDate', today);
+            localStorage.setItem('gameStreak', streak.toString());
         }
         
-        // Save the new date and streak
-        localStorage.setItem('lastPlayDate', today);
-        localStorage.setItem('gameStreak', streak.toString());
+        // Always update the display
+        document.getElementById('streakDisplay').textContent = streak;
+        document.getElementById("endScreen").style.display = "flex";
     }
-    
-    // Always update the display
-    document.getElementById('streakDisplay').textContent = streak;
-    document.getElementById("endScreen").style.display = "flex";
+
+    // Reset the flag after ending the game
+    manuallyExited = false;
 
     // Update the personal high score display
     updateHighScoreDisplay();
