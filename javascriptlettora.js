@@ -63,6 +63,7 @@ window.onload = function() {
             words.push(word);
             displayWord(word);
             showWordPraise(word);
+            checkSpecialWords(word);
             input.value = "";
             input.classList.remove("invalid");
         } else {
@@ -187,6 +188,23 @@ function showSuccessFlash() {
     if (flash) {
         flash.style.opacity = '1';
         setTimeout(() => flash.style.opacity = '0', 300);
+    }
+}
+
+function checkSpecialWords(word) {
+    const lowerWord = word.toLowerCase();
+    
+    // Check if the word contains "dina" and award bonus points
+    if (lowerWord.includes('dina')) {
+        score += 50;  // Add 50 bonus points
+        document.getElementById("currentScore").textContent = `Score: ${score}`;
+        showPopupMessage('💖 Found my name! +50 bonus points! 💖');
+        
+        // Add the sparkle animation to the score
+        document.getElementById("currentScore").style.animation = 'none';
+        setTimeout(() => {
+            document.getElementById("currentScore").style.animation = '';
+        }, 10);
     }
 }
 
