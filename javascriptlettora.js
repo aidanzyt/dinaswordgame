@@ -191,6 +191,41 @@ function calculateWordScore(word) {
     return Math.max(1, Math.floor(word.length * 1.5));
 }
 
+// Add this with your other state variables at the top
+function getWordOfDay() {
+    const words = [
+        "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
+        "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
+        "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
+        "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ"
+    ];
+    
+    const today = new Date().toLocaleDateString();
+    let hash = 0;
+    for (let i = 0; i < today.length; i++) {
+        hash = ((hash << 5) - hash) + today.charCodeAt(i);
+        hash = hash & hash;
+    }
+    return words[Math.abs(hash) % words.length];
+}
+
+function toggleWordOfDay() {
+    const popup = document.getElementById('wordOfDayPopup');
+    const dailyWord = document.getElementById('dailyWord');
+    
+    if (popup.style.display === 'block') {
+        popup.style.display = 'none';
+    } else {
+        dailyWord.textContent = getWordOfDay();
+        popup.style.display = 'block';
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3000);
+    }
+}
+
 function cycleTheme() {
     currentTheme = (currentTheme + 1) % colorThemes.length;
     const theme = colorThemes[currentTheme];
