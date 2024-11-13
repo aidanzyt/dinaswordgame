@@ -24,6 +24,40 @@ window.onload = function() {
     updateHighScoreDisplay();
     initializeStreak();
 
+    // Word of the day functions
+    window.getWordOfDay = function() {
+        const words = [
+            "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
+            "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
+            "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
+            "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ"
+        ];
+        
+        const today = new Date().toLocaleDateString();
+        let hash = 0;
+        for (let i = 0; i < today.length; i++) {
+            hash = ((hash << 5) - hash) + today.charCodeAt(i);
+            hash = hash & hash;
+        }
+        return words[Math.abs(hash) % words.length];
+    };
+
+    window.toggleWordOfDay = function() {
+        const popup = document.getElementById('wordOfDayPopup');
+        const dailyWord = document.getElementById('dailyWord');
+        
+        if (popup.style.display === 'block') {
+            popup.style.display = 'none';
+        } else {
+            dailyWord.textContent = getWordOfDay();
+            popup.style.display = 'block';
+            
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+    };
+
     window.startGame = function() {
         resetGame();
         document.getElementById("introScreen").style.display = "none";
@@ -33,11 +67,11 @@ window.onload = function() {
         gameRunning = true;
 
         const savedTheme = localStorage.getItem('preferredTheme');
-    if (savedTheme !== null) {
-        currentTheme = parseInt(savedTheme);
-        const theme = colorThemes[currentTheme];
-        document.body.style.background = theme.background;
-    }
+        if (savedTheme !== null) {
+            currentTheme = parseInt(savedTheme);
+            const theme = colorThemes[currentTheme];
+            document.body.style.background = theme.background;
+        }
 
         // Display daily letters
         const lettersElement = document.getElementById("letters");
@@ -64,10 +98,10 @@ window.onload = function() {
     
         if (await isValidWord(word)) {
             score += calculateWordScore(word);
-            document.getElementById("currentScore").textContent = `Score: ${score}`; // Add this line
-            document.getElementById("currentScore").style.animation = 'none'; // Reset animation
+            document.getElementById("currentScore").textContent = `Score: ${score}`;
+            document.getElementById("currentScore").style.animation = 'none';
             setTimeout(() => {
-                document.getElementById("currentScore").style.animation = ''; // Restart animation
+                document.getElementById("currentScore").style.animation = '';
             }, 10);
             words.push(word);
             displayWord(word);
