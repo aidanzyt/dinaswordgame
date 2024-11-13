@@ -1,552 +1,553 @@
-// Game state variables
-let letters = getDailyLetters();  // Use daily letters instead of random ones
-let timeLeft = 90;
-let score = 0;
-let words = [];
-let currentTheme = 0;
-let gameRunning = false;
-let manuallyExited = false;
-let timerInterval;
-let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
-let lastPlayDate = localStorage.getItem('lastPlayDate');
-let todaysBest = parseInt(localStorage.getItem('todaysBest')) || 0;
-
-const colorThemes = [
-    { name: '🏖️ Beach', background: 'linear-gradient(120deg, #fdeb93 0%, #f5b785 100%)' },
-    { name: '💼 PwC', background: 'linear-gradient(120deg, #ffffff 0%, #d35400 100%)' },
-    { name: '🇲🇪 Montenegro', background: 'linear-gradient(120deg, #cb3f3f 0%, #ffe900 100%)' },
-    { name: '🍂 Crunchy Leaves', background: 'linear-gradient(120deg, #ffcc80 0%, #d84315 100%)' },
-    { name: '🥛 Doogh', background: 'linear-gradient(120deg, #e0f7fa 0%, #80deea 100%)' }
-];
-
-// Wait for DOM to be fully loaded
-window.onload = function() {
-    updateHighScoreDisplay();
-    initializeStreak();
-
-    window.startGame = function() {
-        resetGame();
-        document.getElementById("introScreen").style.display = "none";
-        document.getElementById("homeLogo").style.display = "none";
-        document.getElementById("game").style.display = "flex";
-        document.getElementById('streakDisplay').textContent = streak;
-        gameRunning = true;
-
-        const savedTheme = localStorage.getItem('preferredTheme');
-    if (savedTheme !== null) {
-        currentTheme = parseInt(savedTheme);
-        const theme = colorThemes[currentTheme];
-        document.body.style.background = theme.background;
-    }
-
-        // Display daily letters
-        const lettersElement = document.getElementById("letters");
-        lettersElement.innerHTML = letters.map(letter => 
-            `<span class="letter">${letter}</span>`
-        ).join(' ');
-
-        document.getElementById("wordInput").focus();
-        startTimer();
-    };
-
-    window.submitWord = async function() {
-        if (!gameRunning) return;
-    
-        let input = document.getElementById("wordInput");
-        let word = input.value.toLowerCase().trim();
-    
-        if (words.includes(word)) {
-            showError("You've already used that word!");
-            input.value = "";
-            input.focus();
-            return;
-        }
-    
-        if (await isValidWord(word)) {
-            score += calculateWordScore(word);
-            document.getElementById("currentScore").textContent = `Score: ${score}`; // Add this line
-            document.getElementById("currentScore").style.animation = 'none'; // Reset animation
-            setTimeout(() => {
-                document.getElementById("currentScore").style.animation = ''; // Restart animation
-            }, 10);
-            words.push(word);
-            displayWord(word);
-            showWordPraise(word);
-            checkSpecialWords(word);
-            input.value = "";
-            input.classList.remove("invalid");
-        } else {
-            input.classList.add("invalid");
-            showError("Word not found in dictionary");
-        }
-    
-        input.focus();
-    };
-    
-    window.closeEndScreen = function() {
-        document.getElementById("endScreen").style.display = "none";
-        document.getElementById("game").style.display = "none";
-        document.getElementById("introScreen").style.display = "flex";
-        document.getElementById("homeLogo").style.display = "block";
-    };
-
-    document.getElementById("wordInput").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            submitWord();
-        }
-    });
-};
-
-// Validate the word using the Datamuse API and additional rules
-async function isValidWord(word) {
-    // Check if the word includes both required letters
-    if (!word.includes(letters[0].toLowerCase()) || !word.includes(letters[1].toLowerCase())) {
-        showPopupMessage("Word does not contain the 2 letters");  // New popup message
-        return false;
-    }
-
-    // Check minimum word length
-    if (word.length < 3) {
-        showError("Word must be at least 3 letters long");
-        return false;
-    }
-
-    // Check if word has already been used
-    if (words.includes(word)) {
-        showError("Word already used");
-        return false;
-    }
-
-    // Check with the Datamuse API for word validity
-    try {
-        const response = await fetch(`https://api.datamuse.com/words?sp=${word}&max=1`);
-        const data = await response.json();
-
-        if (data.length > 0 && data[0].word === word) {
-            return true;
-        } else {
-            showError("Word not found in dictionary");
-            return false;
-        }
-    } catch (error) {
-        console.error("API Error:", error);
-        showError("Error checking word. Please try again.");
-        return false;
-    }
-}
-
-// Function to show a popup message
-function showPopupMessage(message) {
-    let popup = document.createElement("div");
-    popup.className = "popupMessage";
-    popup.textContent = message;
-
-    // Style the popup message
-    popup.style.position = "fixed";
-    popup.style.top = "20px";
-    popup.style.left = "50%";
-    popup.style.transform = "translateX(-50%)";
-    popup.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-    popup.style.color = "white";
-    popup.style.padding = "10px 20px";
-    popup.style.borderRadius = "5px";
-    popup.style.zIndex = "1000";
-    document.body.appendChild(popup);
-
-    // Remove the popup after 2 seconds
-    setTimeout(() => {
-        popup.remove();
-    }, 2000);
-}
-
-// Generate consistent daily letters
-function getDailyLetters() {
-    const now = new Date();
-    const pstOffset = -8; // PST is UTC-8
-    const utcDate = new Date(now.getTime() + pstOffset * 60 * 60 * 1000); // Adjust to PST
-    const dateSeed = utcDate.toISOString().split("T")[0]; // Use the date in PST as the seed
-
-    let hash = 0;
-    for (let i = 0; i < dateSeed.length; i++) {
-        hash = dateSeed.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    const letters = [
-        String.fromCharCode(65 + (Math.abs(hash) % 26)),
-        String.fromCharCode(65 + (Math.abs(hash * 2) % 26))
-    ];
-
-    return letters;
-}
-
-function showPopupMessage(message) {
-    const popup = document.createElement('div');
-    popup.className = 'popup-message';
-    popup.textContent = message;
-    document.body.appendChild(popup);
-    setTimeout(() => popup.remove(), 1500);
-}
-
-function calculateWordScore(word) {
-    return Math.max(1, Math.floor(word.length * 1.5));
-}
-
-// Add this with your other state variables at the top
-function getWordOfDay() {
-    const words = [
-        "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
-        "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
-        "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
-        "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ"
-    ];
-    
-    const today = new Date().toLocaleDateString();
-    let hash = 0;
-    for (let i = 0; i < today.length; i++) {
-        hash = ((hash << 5) - hash) + today.charCodeAt(i);
-        hash = hash & hash;
-    }
-    return words[Math.abs(hash) % words.length];
-}
-
-function toggleWordOfDay() {
-    const popup = document.getElementById('wordOfDayPopup');
-    const dailyWord = document.getElementById('dailyWord');
-    
-    if (popup.style.display === 'block') {
-        popup.style.display = 'none';
-    } else {
-        dailyWord.textContent = getWordOfDay();
-        popup.style.display = 'block';
-        
-        // Hide after 3 seconds
-        setTimeout(() => {
-            popup.style.display = 'none';
-        }, 3000);
-    }
-}
-
-function cycleTheme() {
-    currentTheme = (currentTheme + 1) % colorThemes.length;
-    const theme = colorThemes[currentTheme];
-    
-    // Apply the theme
-    document.body.style.background = theme.background;
-    
-    // Show a little message
-    showPopupMessage(theme.name);
-    
-    // Save preference
-    localStorage.setItem('preferredTheme', currentTheme);
-}
-
-// Show success flash animation
-function showSuccessFlash() {
-    const flash = document.querySelector('.success-flash');
-    if (flash) {
-        flash.style.opacity = '1';
-        setTimeout(() => flash.style.opacity = '0', 300);
-    }
-}
-
-function checkSpecialWords(word) {
-    const lowerWord = word.toLowerCase();
-    
-    // Check if the word contains "dina" and award bonus points
-    if (lowerWord.includes('dina')) {
-        score += 50;  // Add 50 bonus points
-        document.getElementById("currentScore").textContent = `Score: ${score}`;
-        showPopupMessage('💖 Found my name! +50 bonus points! 💖');
-        
-        // Add the sparkle animation to the score
-        document.getElementById("currentScore").style.animation = 'none';
-        setTimeout(() => {
-            document.getElementById("currentScore").style.animation = '';
-        }, 10);
-    }
-}
-
-function updateStreak() {
-    const today = new Date().toLocaleDateString();
-    
-    if (lastPlayDate !== today) {
-        // It's a new day
-        if (lastPlayDate) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            if (lastPlayDate !== yesterday.toLocaleDateString()) {
-                // Streak broken - they missed a day
-                streak = 1;
-            } else {
-                // Continued streak
-                streak++;
-            }
-        } else {
-            // First time playing
-            streak = 1;
-        }
-        
-        // Save the new date and streak
-        localStorage.setItem('lastPlayDate', today);
-        localStorage.setItem('gameStreak', streak);
-    }
-    
-    // Update the display
-    document.getElementById('streakDisplay').textContent = streak;
-}
-
-// Timer functions
-function startTimer() {
-    clearInterval(timerInterval);
-    updateProgressBar(90);
-    timerInterval = setInterval(function() {
-        if (timeLeft > 0 && gameRunning) {
-            timeLeft--;
-            document.getElementById("timer").textContent = `Time left: ${timeLeft}`;
-            updateProgressBar(timeLeft);
-            if (timeLeft <= 10) {
-                document.getElementById("timer").classList.add("timer-warning");
-            }
-        } else {
-            clearInterval(timerInterval);
-            endGame();
-        }
-    }, 1000);
-}
-
-function updateProgressBar(timeRemaining) {
-    const progress = (timeRemaining / 90) * 100;
-    document.getElementById('timeProgress').style.transform = `scaleX(${progress / 100})`;
-}
-
-function showWordPraise(word) {
-    if (word.length >= 10) {
-        const longWordPraises = [
-            "INCREDIBLE! 🎯🎯🎯",
-            "WORD MASTER! 👑",
-            "PHENOMENAL! 🌟✨💫",
-            "VOCABULARY GENIUS! 🧠",
-            "OUTSTANDING! 🏆",
-            "SPECTACULAR! 🎪✨",
-            "LEGENDARY! 🔥🔥🔥",
-            "IMPRESSIVE! 🌈🌟",
-            "EXTRAORDINARY! ⭐️🎯",
-            "MAGNIFICENT! 🎉🎊",
-            "BRILLIANT! 💫✨",
-            "AMAZING FIND! 🎯💫",
-            "WORDSMITH! 📚✨",
-            "SPECTACULAR! 🌟🎨",
-            "GENIUS LEVEL! 🧠💫",
-            "TOP TIER WORD! 🏆✨",
-            "MASTERFUL! 👑💫",
-            "EXCEPTIONAL! 🌟🎯",
-            "REMARKABLE! ⭐️🎉",
-            "OUTSTANDING! 🔥💫"
-        ];
-        
-        const message = longWordPraises[Math.floor(Math.random() * longWordPraises.length)];
-        showPopupMessage(message);
-    }
-}
-
-function showError(message) {
-    let errorDiv = document.getElementById("errorMessage");
-    errorDiv.textContent = message;
-    setTimeout(() => errorDiv.textContent = "", 2000);
-}
-
-function returnToHome() {
-    manuallyExited = true;  // Set flag to true when exiting manually
-    document.getElementById("game").style.display = "none";       // Hide the game screen
-    document.getElementById("introScreen").style.display = "flex"; // Show the home screen
-    document.getElementById("homeLogo").style.display = "block";   // Ensure home logo is visible
-    gameRunning = false;                                           // Stop the game if it’s running
-}
-
-function displayWord(word) {
-    const wordElement = document.createElement("p");
-    wordElement.textContent = word;
-    const scoreSpan = document.createElement("span");
-    const wordScore = calculateWordScore(word);
-    scoreSpan.textContent = ` +${wordScore}`;
-    scoreSpan.classList.add("score-popup"); // Add the class for animation
-    scoreSpan.style.color = "var(--primary-color)";
-    wordElement.appendChild(scoreSpan);
-    document.getElementById("wordsList").appendChild(wordElement);
-}
-
-function updateHighScoreDisplay() {
-    const highScore = localStorage.getItem("lettoraHighScore") || 0;
-    const highScoreLetters = localStorage.getItem("lettoraHighScoreLetters") || "AB"; // Default letters if no high score is set yet
-    document.getElementById('highScoreDisplay').textContent = highScore;
-    document.getElementById('highScoreLetters').textContent = highScoreLetters;
-}
-
-async function endGame() {
-    gameRunning = false;
-
-    // Only display the score and other end-game elements if the game was not manually exited
-    if (!manuallyExited) {
-        document.getElementById("finalScore").textContent = score;
-
-        // Check and update high score
-        const currentHighScore = parseInt(localStorage.getItem("lettoraHighScore")) || 0;
-        if (score > currentHighScore) {
-            localStorage.setItem("lettoraHighScore", score.toString());
-            localStorage.setItem("lettoraHighScoreLetters", letters.join('')); // Save the letters used
-            createConfetti(); // Celebrate new high score
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Dina's Word Game</title>
+        <script>
+            window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments) };
+            va('pageview');
+            </script>
+        <script>
+            !function(t,e){var n=void 0!==t.self&&t.self.location&&"https:"===t.self.location.protocol,o=e.createElement("script");o.src="/_vercel/insights/script.js".concat(n?"":""),o.defer=!0,o.setAttribute("data-sdkn","@vercel/analytics"),o.setAttribute("data-sdkv","1.1.1"),(e.head||e.body).appendChild(o)}(window,document);
+            </script>
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
+        <link rel="apple-touch-icon" href="favicon.png">        
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --background: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #34495e;
         }
 
-        // Update today's best score
-        const today = new Date().toLocaleDateString();
-        if (localStorage.getItem('todaysBestDate') !== today) {
-            // New day, reset best
-            todaysBest = score;
-            localStorage.setItem('todaysBestDate', today);
-        } else if (score > todaysBest) {
-            todaysBest = score;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        localStorage.setItem('todaysBest', todaysBest.toString());
-        document.getElementById("todaysBestScore").textContent = todaysBest;
 
-        // Display final word list
-        const finalWordList = document.getElementById("finalWordList");
-        finalWordList.innerHTML = '';
-
-        words.forEach(word => {
-            const wordElement = document.createElement("p");
-            const wordScore = calculateWordScore(word);
-            wordElement.innerHTML = `${word} <span style="color: var(--primary-color)">+${wordScore}</span>`;
-            finalWordList.appendChild(wordElement);
-        });
-
-        // Update streak - improved logic
-        const lastPlayDate = localStorage.getItem('lastPlayDate');
-        let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
-        
-        if (lastPlayDate !== today) {
-            // It's a new day
-            if (lastPlayDate) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                if (lastPlayDate !== yesterday.toLocaleDateString()) {
-                    // Streak broken - they missed a day
-                    streak = 1;
-                } else {
-                    // Continued streak
-                    streak++;
-                }
-            } else {
-                // First time playing
-                streak = 1;
-            }
-            
-            // Save the new date and streak
-            localStorage.setItem('lastPlayDate', today);
-            localStorage.setItem('gameStreak', streak.toString());
+        html, body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            height: 100%; /* Add this */
+            width: 100%;
+            overflow: hidden; /* Change from overflow-x: hidden */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed; /* Add this */
+            touch-action: none; /* Add this */
         }
-        
-        // Always update the display
-        document.getElementById('streakDisplay').textContent = streak;
-        document.getElementById("endScreen").style.display = "flex";
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, #ffffff 0%, #f7d7ff 0%);
+            opacity: 0.3;
+            z-index: -1;
+            animation: gradientBG 15s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            height: 100vh; /* Change from min-height to height */
+            width: 100%;
+            overflow: hidden; /* Add this */
+        }
+
+        .logo {
+            width: min(200px, 80%);
+            height: auto;
+            margin: 20px 0;
+        }
+
+        #homeLogo {
+            position: absolute;
+            top: 100px; /* Adjust as necessary */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .theme-button {
+    cursor: pointer;
+    padding: 5px;
+    transition: opacity 0.2s;
+}
+
+.theme-button:hover {
+    opacity: 0.7;
+}
+
+        .intro-container, .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            padding: 10px;
+            margin: auto;
+            margin-top: 250px;
+        }
+
+        .game-container {
+            display: none;
+            padding: 30px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: min(600px, 95%);
+            margin-top: 70px;
+        }
+
+        h1 {
+            font-size: clamp(24px, 5vw, 36px);
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: clamp(16px, 3vw, 18px);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .play-button, #submitButton {
+            font-size: clamp(16px, 3vw, 20px);
+            padding: 15px 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+            width: min(300px, 80%);
+        }
+
+        .play-button:hover, #submitButton:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        #letters {
+            font-size: clamp(48px, 15vw, 72px);
+            color: var(--text-primary);
+            font-weight: bold;
+            margin: 20px 0;
+            letter-spacing: 0.1em;
+        }
+
+        #timer {
+            font-size: clamp(18px, 4vw, 24px);
+            color: var(--text-secondary);
+            margin: 10px 0;
+        }
+
+        .word-of-day-popup {
+    position: fixed;
+    top: 40px;  /* Adjust this to position it where you want it */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: none;
+    white-space: nowrap;
+    z-index: 1001; /* Make sure it's above other elements */
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+        .progress-container {
+            width: 90%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            transform-origin: left;
+            transition: transform 1s linear;
+        }
+
+        #wordInput {
+            font-size: clamp(16px, 3vw, 20px);
+            padding: 15px;
+            width: min(400px, 90%);
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            margin: 10px 0;
+        }
+
+        #wordInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #wordInput.invalid {
+            border-color: #ff4757;
+            background-color: #ffe6e6;
+        }
+
+        #errorMessage {
+            color: #ff4757;
+            font-size: clamp(14px, 2vw, 16px);
+            min-height: 20px;
+            margin: 5px 0;
+        }
+
+        #wordsList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        #wordsList p {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 10px;
+            margin: 0;
+            font-size: clamp(14px, 2vw, 16px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .high-score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        #endScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .popup button {
+            font-size: 18px;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #wordsList {
+        max-height: 30vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 20px;
     }
 
-    // Reset the flag after ending the game
-    manuallyExited = false;
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+        }
 
-    // Update the personal high score display
-    updateHighScoreDisplay();
+            .high-score {
+                top: auto;
+                bottom: 20px;
+        }
+
+            .game-container {
+                padding: 20px;
+                max-height: 100vh;
+                overflow: hidden;
+        }
+
+}
+        .timer-warning {
+            color: #ff4757 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        #wordsList p {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 10px;
+            margin: 0;
+            font-size: clamp(14px, 2vw, 16px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @keyframes scorePopup {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .score-popup {
+            margin-left: 8px;
+            color: var(--primary-color);
+            font-weight: bold;
+            animation: scorePopup 0.3s ease;
+        }
+        #wordSummary {
+    margin: 20px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
 }
 
-// Also update the resetGame function to properly show current high score
-function resetGame() {
-    timeLeft = 90; 
-    score = 0;
-    words = [];
-    document.getElementById("wordsList").innerHTML = "";
-    document.getElementById("timer").textContent = "Time left: 90";
-    document.getElementById("timer").style.color = "#34495e";
-    document.getElementById("timer").classList.remove("timer-warning");
-    document.getElementById("wordInput").value = "";
-    document.getElementById("wordInput").classList.remove("invalid");
-    document.getElementById("errorMessage").textContent = "";
-    document.getElementById("currentScore").textContent = "Score: 0";
-    updateHighScoreDisplay(); // Make sure high score is displayed correctly
+#finalWordList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    padding: 10px;
 }
 
-function initializeStreak() {
-    const streak = parseInt(localStorage.getItem('gameStreak')) || 0;
-    document.getElementById('streakDisplay').textContent = streak;
+#finalWordList p {
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 0;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-function createConfetti() {
-    const colors = ['#4CAF50', '#45a049', '#2E7D32', '#A5D6A7'];
-    for (let i = 0; i < 50; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.left = Math.random() * window.innerWidth + 'px';
+.popup {
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
-        document.body.appendChild(confetti);
+.score-display {
+    font-size: clamp(18px, 4vw, 24px);
+    color: var(--primary-color);
+    font-weight: bold;
+    margin: 10px 0;
+    animation: scoreUpdate 0.3s ease;
+}
 
-        const animation = confetti.animate([
-            { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
-            { transform: `translate(${Math.random() * 300 - 150}px, ${window.innerHeight}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-        ], {
-            duration: Math.random() * 2000 + 1000,
-            easing: 'cubic-bezier(.25,.46,.45,.94)'
-        });
+@keyframes scoreUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
-        animation.onfinish = () => confetti.remove();
+.popup-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 20px;
+    animation: floatUp 1.5s ease-out;
+    z-index: 1000;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+@keyframes floatUp {
+    0% { opacity: 0; transform: translate(-50%, -40%); }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -60%); }
+}
+
+.theme-counter {
+    position: fixed;
+    top: 100px;  /* Position it below streak counter */
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.theme-counter:hover {
+    opacity: 0.8;
+}
+
+@media (max-width: 480px) {
+    .theme-counter {
+        top: auto;
+        bottom: 100px;  /* Position above streak counter on mobile */
     }
 }
 
-function shareScore() {
-    // Check if score and letters are defined and accessible
-    console.log("Current Score:", score);  // Debugging check
-    console.log("Letters:", letters);      // Debugging check
+#shareButton {
+    font-size: 18px;
+    padding: 12px 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
 
-    // Use the current score (not the high score)
-    const currentScore = score;
-    const lettersText = letters.join('');  // Ensure letters array is converted to a string
+.streak-counter {
+    position: fixed;
+    top: 60px;  /* Position it below the high score */
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+}
 
-    // Add performance emoji based on current score
-    let performanceEmoji;
-    if (currentScore < 50) performanceEmoji = "🌱";
-    else if (currentScore < 100) performanceEmoji = "🌿";
-    else if (currentScore < 150) performanceEmoji = "🌳";
-    else if (currentScore < 200) performanceEmoji = "🏆";
-    else performanceEmoji = "👑";
+#gameHeader {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+}
 
-    // Create formatted share text without high score
-    const shareText = `Dina's Word Game ${performanceEmoji}\n` +
-        `Letters: ${lettersText}\n` +
-        `Score: ${currentScore}`;
-    
-    const shareUrl = window.location.href;
-    const fullShareText = shareText + "\nPlay at: " + shareUrl;
+#gameHeader button {
+    padding: 5px 10px;
+    background-color: #ffcccc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-    // Use native sharing for mobile
-    if (navigator.share) {
-        navigator.share({
-            title: "Dina's Word Game",
-            text: fullShareText  // Pass the full text without specifying the URL separately
-        }).catch(error => console.error("Error sharing:", error));
-    } else {
-        // Fallback for non-mobile devices or unsupported browsers
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullShareText)}`;
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
-        const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
-        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(fullShareText)}`;
-        const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(fullShareText)}`;
-
-        // Replace button content with social media links for desktop
-        document.getElementById("shareButton").innerHTML = `
-            <a href="${twitterUrl}" target="_blank" style="color: #1DA1F2; margin-right: 10px;">Twitter</a>
-            <a href="${facebookUrl}" target="_blank" style="color: #4267B2; margin-right: 10px;">Facebook</a>
-            <a href="${linkedinUrl}" target="_blank" style="color: #0077B5; margin-right: 10px;">LinkedIn</a>
-            <a href="${whatsappUrl}" target="_blank" style="color: #25D366; margin-right: 10px;">WhatsApp</a>
-            <a href="${mailtoUrl}" style="color: #D44638;">Email</a>
-        `;
+@media (max-width: 480px) {
+    .streak-counter {
+        top: auto;
+        bottom: 60px;  /* Position above the high score on mobile */
     }
 }
+#shareButton:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+    </style>
+</head>
+<body>
+    <div class="success-flash"></div>
+    <div class="high-score">High Score: <span id="highScoreDisplay">0</span> with letters <span id="highScoreLetters">AB</span></div>
+    <div class="streak-counter">
+        <span>🔥 Daily Streak: <span id="streakDisplay">0</span></span>
+    </div>
+    <div class="theme-counter">
+        <span class="theme-button" onclick="cycleTheme()">🎨 Theme</span>
+    </div>
+    <div class="container">
+        <img src="dinas-word-game-small.svg" alt="DWG Logo" id="homeLogo" class="logo"onclick="toggleWordOfDay()">
+        <div id="wordOfDayPopup" class="word-of-day-popup">
+            Word of the Day: <span id="dailyWord"></span> ✨
+        </div>
+        <div class="intro-container" id="introScreen">
+            <h1>Welcome to Dina's <br> Word Game!</h1>
+            <p>Create as many words as possible using the two letters.<br>You have 90 seconds to play.</p>
+            <button class="play-button" onclick="startGame()">Play</button>
+        </div>
+
+        <div id="game" class="game-container">
+            <h1 id="letters">AB</h1>
+            <p id="timer">Time left: 90</p>
+            <p id="currentScore" class="score-display">Score: 0</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="timeProgress"></div>
+            </div>
+            <div id="gameHeader">
+                <button onclick="returnToHome()">🏠 Return to Home</button>
+            </div>            
+            <input type="text" id="wordInput" placeholder="Enter word" autocomplete="off">
+            <div id="errorMessage"></div>
+            <button id="submitButton" onclick="submitWord()">Submit</button>
+            <div id="wordsList"></div>
+        </div>
+
+        <div id="endScreen">
+            <div class="popup">
+                <h2>Game Over!</h2>
+                <p>Your Score: <span id="finalScore"></span></p>
+                <p>Today's Best: <span id="todaysBestScore">0</span></p>
+                <div id="wordSummary">
+                    <h3>Your Words:</h3>
+                    <div id="finalWordList"></div>
+                </div>
+                <button onclick="closeEndScreen()">Play Again</button>
+                <button id="shareButton" onclick="shareScore()">Share Your Score</button>
+            </div>
+        </div>
+    </div>
+    <script src="javascriptlettora.js"></script>
+</body>
+</html>
