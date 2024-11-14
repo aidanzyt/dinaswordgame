@@ -207,11 +207,15 @@ function getWordOfDay() {
 
 function toggleWordOfDay() {
     const popup = document.getElementById('wordOfDayPopup');
-    if (getComputedStyle(popup).display === 'none') {
-        const word = getWordOfDay();
-        document.getElementById('dailyWord').textContent = word;
-        popup.style.display = 'block';
-        
+    const word = getWordOfDay(); // Get the word of the day
+
+    document.getElementById('dailyWord').textContent = word; // Update the word in the popup
+
+    // Toggle visibility
+    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+
+    // Hide the popup automatically after 3 seconds
+    if (popup.style.display === 'block') {
         setTimeout(() => {
             popup.style.display = 'none';
         }, 3000);
