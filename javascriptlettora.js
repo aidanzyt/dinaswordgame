@@ -206,15 +206,17 @@ function getWordOfDay() {
 }
 
 function toggleWordOfDay() {
-    // First check if popup exists, if not create it
-    let popup = document.getElementById('wordOfDayPopup');
-    if (!popup) {
-        popup = document.createElement('div');
-        popup.id = 'wordOfDayPopup';
-        popup.className = 'word-of-day-popup';
-        popup.innerHTML = `Word of the Day: <span id="dailyWord"></span> ✨`;
-        document.body.appendChild(popup);
+    const popup = document.getElementById('wordOfDayPopup');
+    if (getComputedStyle(popup).display === 'none') {
+        const word = getWordOfDay();
+        document.getElementById('dailyWord').textContent = word;
+        popup.style.display = 'block';
+        
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3000);
     }
+}
 
     const dailyWord = document.getElementById('dailyWord');
     if (!dailyWord) {
@@ -234,7 +236,6 @@ function toggleWordOfDay() {
             popup.style.display = 'none';
         }, 3000);
     }
-}
 
 function calculateWordScore(word) {
     return Math.max(1, Math.floor(word.length * 1.5));
