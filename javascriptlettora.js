@@ -196,12 +196,19 @@ function getWordOfDay() {
         "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ"
     ];
     
-    const today = new Date().toLocaleDateString();
+    // Get the current date in UTC (or fixed PST timezone if you prefer)
+    const now = new Date();
+    const utcDate = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    const dateSeed = utcDate.toISOString().split("T")[0]; // Fixed date in YYYY-MM-DD format
+
+    // Generate a hash from the date for consistent "Word of the Day"
     let hash = 0;
-    for (let i = 0; i < today.length; i++) {
-        hash = ((hash << 5) - hash) + today.charCodeAt(i);
-        hash = hash & hash;
+    for (let i = 0; i < dateSeed.length; i++) {
+        hash = ((hash << 5) - hash) + dateSeed.charCodeAt(i);
+        hash = hash & hash; // Keep the hash within bounds
     }
+
+    // Select a word based on the hash
     return words[Math.abs(hash) % words.length];
 }
 
