@@ -16,7 +16,8 @@ const colorThemes = [
     { name: '💼 PwC', background: 'linear-gradient(120deg, #ffffff 0%, #d35400 100%)' },
     { name: '🇲🇪 Montenegro', background: 'linear-gradient(120deg, #cb3f3f 0%, #ffe900 100%)' },
     { name: '🍂 Crunchy Leaves', background: 'linear-gradient(120deg, #ffcc80 0%, #d84315 100%)' },
-    { name: '🥛 Doogh', background: 'linear-gradient(120deg, #e0f7fa 0%, #80deea 100%)' }
+    { name: '🥛 Doogh', background: 'linear-gradient(120deg, #e0f7fa 0%, #80deea 100%)' },
+    { name: '🧚 Fairy Princess', background: 'linear-gradient(120deg, #d8bfd8 0%, #dda0dd 50%, #ee82ee 100%), url("path/to/fairy-and-flowers-pattern.png")' }
 ];
 
 // Wait for DOM to be fully loaded
