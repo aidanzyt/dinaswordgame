@@ -18,7 +18,8 @@ const colorThemes = [
     { name: '🍂 Crunchy Leaves', background: 'linear-gradient(120deg, #ffcc80 0%, #d84315 100%)' },
     { name: '🥛 Doogh', background: 'linear-gradient(120deg, #e0f7fa 0%, #80deea 100%)' },
     { name: '🧚 Fairy Princess', background: 'linear-gradient(120deg, #d8bfd8 0%, #dda0dd 50%, #ee82ee 100%)' },
-    { name: '🌌 Starry Night', background: 'linear-gradient(120deg, #ff9a9e 0%, #fad0c4 50%, #1a2a6c 100%)' }
+    { name: '🌌 Starry Night', background: 'linear-gradient(120deg, #ff9a9e 0%, #fad0c4 50%, #1a2a6c 100%)' },
+    { name: '🍔 Burger Crush', background: 'linear-gradient(120deg, #ffcc33 0%, #d87d4a 33%, #a2c523 66%, #8c6138 100%)' }
 ];
 
 // Wait for DOM to be fully loaded
