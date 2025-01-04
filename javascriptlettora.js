@@ -1,6 +1,6 @@
 // Game state variables
 let letters = getDailyLetters();  // Use daily letters instead of random ones
-let timeLeft = 90;
+let timeLeft = 60;
 let score = 0;
 let words = [];
 let currentTheme = 0;
@@ -327,7 +327,7 @@ function updateStreak() {
 // Timer functions
 function startTimer() {
     clearInterval(timerInterval);
-    updateProgressBar(90);
+    updateProgressBar(60);
     timerInterval = setInterval(function() {
         if (timeLeft > 0 && gameRunning) {
             timeLeft--;
@@ -344,7 +344,7 @@ function startTimer() {
 }
 
 function updateProgressBar(timeRemaining) {
-    const progress = (timeRemaining / 90) * 100;
+    const progress = (timeRemaining / 60) * 100;
     document.getElementById('timeProgress').style.transform = `scaleX(${progress / 100})`;
 }
 
@@ -489,11 +489,11 @@ async function endGame() {
 
 // Also update the resetGame function to properly show current high score
 function resetGame() {
-    timeLeft = 90; 
+    timeLeft = 60; 
     score = 0;
     words = [];
     document.getElementById("wordsList").innerHTML = "";
-    document.getElementById("timer").textContent = "Time left: 90";
+    document.getElementById("timer").textContent = "Time left: 60";
     document.getElementById("timer").style.color = "#34495e";
     document.getElementById("timer").classList.remove("timer-warning");
     document.getElementById("wordInput").value = "";
