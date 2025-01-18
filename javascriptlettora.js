@@ -162,21 +162,26 @@ function showPopupMessage(message) {
     }, 2000);
 }
 
-// Generate consistent daily letters
+// Generate consistent daily letters with improved randomness
 function getDailyLetters() {
     const now = new Date();
     const pstOffset = -8; // PST is UTC-8
-    const utcDate = new Date(now.getTime() + pstOffset * 60 * 60 * 1000); // Adjust to PST
-    const dateSeed = utcDate.toISOString().split("T")[0]; // Use the date in PST as the seed
+    const pstDate = new Date(now.getTime() + pstOffset * 60 * 60 * 1000); // Adjust to PST
+    const dateSeed = pstDate.toISOString().split("T")[0]; // Use the date in PST as the seed
 
+    // Use a more robust hash function
     let hash = 0;
     for (let i = 0; i < dateSeed.length; i++) {
-        hash = dateSeed.charCodeAt(i) + ((hash << 5) - hash);
+        hash = (hash * 31 + dateSeed.charCodeAt(i)) % 2147483647; // Prime multiplier for better distribution
     }
 
+    // Generate two independent letters
+    const firstLetterIndex = (hash % 26); // First letter
+    const secondLetterIndex = ((hash >> 5) % 26); // Second letter derived from a shifted hash
+
     const letters = [
-        String.fromCharCode(65 + (Math.abs(hash) % 26)),
-        String.fromCharCode(65 + (Math.abs(hash * 2) % 26))
+        String.fromCharCode(65 + Math.abs(firstLetterIndex)), // A-Z
+        String.fromCharCode(65 + Math.abs(secondLetterIndex)) // A-Z
     ];
 
     return letters;
