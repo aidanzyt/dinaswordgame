@@ -193,11 +193,16 @@ function showPopupMessage(message) {
 // Add this near the top with your other game state variables
 function getWordOfDay() {
     const words = [
-        "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
-        "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
-        "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
-        "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ"
-    ];
+    "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
+    "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
+    "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
+    "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ",
+    "THRIFT STORE", "BLOOMS TD BATTLES 2", "AIDAN", 
+    "BISCUITS AND MILK", "AUSTRIA", "CESAR SALAD", "STEAK", 
+    "DIABETES", "POKEMON", "SMARTIES COOKIE", 
+    "DUCK SITTING ON EARTH WATCHING TV", "PASULJ", 
+    "COWS", "MOSQUE", "SATURDAY", "X0.5", "CATS IN WINDOWS"
+];
     
     // Get the current date in UTC (or fixed PST timezone if you prefer)
     const now = new Date();
