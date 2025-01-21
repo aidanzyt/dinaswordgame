@@ -76,18 +76,25 @@
             overflow: hidden; /* Add this */
         }
 
-        .logo {
-            width: min(200px, 80%);
-            height: auto;
-            margin: 20px 0;
-        }
-
         #homeLogo {
-            position: absolute;
-            top: 100px; /* Adjust as necessary */
-            left: 50%;
-            transform: translateX(-50%);
-        }
+    position: absolute;
+    top: 15%; /* Use percentage for relative positioning */
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(200px, 80%);
+    z-index: 10; /* Ensure it stays above other elements */
+}
+
+@media (max-width: 480px) {
+    #homeLogo {
+        top: 5%; /* Adjust for smaller screens */
+        width: min(200px, 70%); /* Shrink the logo slightly */
+    }
+
+    .intro-container, .game-container {
+        margin-top: 10%; /* Add space to push the container below the logo */
+    }
+}
 
         .theme-button {
     cursor: pointer;
@@ -99,18 +106,23 @@
     opacity: 0.7;
 }
 
-        .intro-container, .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            width: 90%;
-            max-width: 600px;
-            padding: 10px;
-            margin: auto;
-            margin-top: 250px;
-        }
+.intro-container, .game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+    padding: 30px;
+    border-radius: 20px;
+    background: var(--card-bg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.intro-container {
+    position: relative; /* Ensures the container respects the flow */
+}
 
         .game-container {
             display: none;
@@ -119,7 +131,7 @@
             background: var(--card-bg);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: min(600px, 95%);
-            margin-top: 70px;
+            margin-top: 20px;
         }
 
         h1 {
