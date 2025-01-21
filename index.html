@@ -78,7 +78,7 @@
 
         #homeLogo {
     position: absolute;
-    top: 12%; /* Use percentage for relative positioning */
+    top: 10vh; /* Use viewport height for consistent spacing */
     left: 50%;
     transform: translateX(-50%);
     width: min(225px, 80%);
@@ -87,12 +87,12 @@
 
 @media (max-width: 480px) {
     #homeLogo {
-        top: 12%; /* Adjust for smaller screens */
-        width: min(225px, 70%); /* Shrink the logo slightly */
+        top: 8vh; /* Adjust for smaller screens */
+        width: min(200px, 70%); /* Slightly reduce the logo size */
     }
 
     .intro-container, .game-container {
-        margin-top: 0%; /* Add space to push the container below the logo */
+        margin-top: calc(8vh + 0px); /* Dynamically adjust based on logo height */
     }
 }
 
