@@ -175,14 +175,18 @@ function getDailyLetters() {
         hash = (hash * 31 + dateSeed.charCodeAt(i)) % 2147483647; // Prime multiplier for better distribution
     }
 
-    // Generate two independent letters
-    const firstLetterIndex = (hash % 26); // First letter
-    const secondLetterIndex = ((hash >> 5) % 26); // Second letter derived from a shifted hash
+// Helper function to compute letter from index
+const getLetter = (index) => String.fromCharCode(65 + index);
 
-    const letters = [
-        String.fromCharCode(65 + Math.abs(firstLetterIndex)), // A-Z
-        String.fromCharCode(65 + Math.abs(secondLetterIndex)) // A-Z
-    ];
+// Debug hash values and indices
+const firstLetterIndex = ((hash % 26) + 26) % 26;
+const secondLetterIndex = (((hash ^ (hash >> 5)) % 26) + 26) % 26;
+
+console.log("Hash:", hash);
+console.log("First Letter Index:", firstLetterIndex);
+console.log("Second Letter Index:", secondLetterIndex);
+
+const letters = [getLetter(firstLetterIndex), getLetter(secondLetterIndex)];
 
     return letters;
 }
