@@ -1,0 +1,5 @@
+google.com, pub-8045621104292744, DIRECT, f08c47fec0942fa0
+
+
+
+Add ads.txt file for Google AdSense verification
