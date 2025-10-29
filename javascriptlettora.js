@@ -1,5 +1,5 @@
 // Game state variables
-let letters = getDailyLetters();  // Use daily letters instead of random ones
+let letters = getDailyLetters();
 let timeLeft = 60;
 let score = 0;
 let words = [];
@@ -22,7 +22,6 @@ const colorThemes = [
     { name: '🍔 Burger Crush', background: 'linear-gradient(120deg, #ffcc33 0%, #d87d4a 33%, #a2c523 66%, #8c6138 100%)' }
 ];
 
-// Wait for DOM to be fully loaded
 window.onload = function() {
     updateHighScoreDisplay();
     initializeStreak();
@@ -32,7 +31,6 @@ window.onload = function() {
         document.getElementById("introScreen").style.display = "none";
         document.getElementById("homeLogo").style.display = "none";
         document.getElementById("game").style.display = "flex";
-        document.getElementById('streakDisplay').textContent = streak;
         gameRunning = true;
 
         const savedTheme = localStorage.getItem('preferredTheme');
@@ -42,7 +40,6 @@ window.onload = function() {
             document.body.style.background = theme.background;
         }
 
-        // Display daily letters
         const lettersElement = document.getElementById("letters");
         lettersElement.innerHTML = letters.map(letter => 
             `<span class="letter">${letter}</span>`
@@ -100,27 +97,22 @@ window.onload = function() {
     });
 };
 
-// Validate the word using the Datamuse API and additional rules
 async function isValidWord(word) {
-    // Check if the word includes both required letters
     if (!word.includes(letters[0].toLowerCase()) || !word.includes(letters[1].toLowerCase())) {
-        showPopupMessage("Word does not contain the 2 letters");  // New popup message
+        showPopupMessage("Word does not contain the 2 letters");
         return false;
     }
 
-    // Check minimum word length
     if (word.length < 3) {
         showError("Word must be at least 3 letters long");
         return false;
     }
 
-    // Check if word has already been used
     if (words.includes(word)) {
         showError("Word already used");
         return false;
     }
 
-    // Check with the Datamuse API for word validity
     try {
         const response = await fetch(`https://api.datamuse.com/words?sp=${word}&max=1`);
         const data = await response.json();
@@ -138,59 +130,6 @@ async function isValidWord(word) {
     }
 }
 
-// Function to show a popup message
-function showPopupMessage(message) {
-    let popup = document.createElement("div");
-    popup.className = "popupMessage";
-    popup.textContent = message;
-
-    // Style the popup message
-    popup.style.position = "fixed";
-    popup.style.top = "20px";
-    popup.style.left = "50%";
-    popup.style.transform = "translateX(-50%)";
-    popup.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-    popup.style.color = "white";
-    popup.style.padding = "10px 20px";
-    popup.style.borderRadius = "5px";
-    popup.style.zIndex = "1000";
-    document.body.appendChild(popup);
-
-    // Remove the popup after 2 seconds
-    setTimeout(() => {
-        popup.remove();
-    }, 2000);
-}
-
-// Generate consistent daily letters with improved randomness
-function getDailyLetters() {
-    const now = new Date();
-    const pstOffset = -8; // PST is UTC-8
-    const pstDate = new Date(now.getTime() + pstOffset * 60 * 60 * 1000); // Adjust to PST
-    const dateSeed = pstDate.toISOString().split("T")[0]; // Use the date in PST as the seed
-
-    // Use a more robust hash function
-    let hash = 0;
-    for (let i = 0; i < dateSeed.length; i++) {
-        hash = (hash * 31 + dateSeed.charCodeAt(i)) % 2147483647; // Prime multiplier for better distribution
-    }
-
-// Helper function to compute letter from index
-const getLetter = (index) => String.fromCharCode(65 + index);
-
-// Debug hash values and indices
-const firstLetterIndex = ((hash % 26) + 26) % 26;
-const secondLetterIndex = (((hash ^ (hash >> 5)) % 26) + 26) % 26;
-
-console.log("Hash:", hash);
-console.log("First Letter Index:", firstLetterIndex);
-console.log("Second Letter Index:", secondLetterIndex);
-
-const letters = [getLetter(firstLetterIndex), getLetter(secondLetterIndex)];
-
-    return letters;
-}
-
 function showPopupMessage(message) {
     const popup = document.createElement('div');
     popup.className = 'popup-message';
@@ -199,71 +138,71 @@ function showPopupMessage(message) {
     setTimeout(() => popup.remove(), 1500);
 }
 
-// Add this near the top with your other game state variables
+function getDailyLetters() {
+    const now = new Date();
+    const pstOffset = -8;
+    const pstDate = new Date(now.getTime() + pstOffset * 60 * 60 * 1000);
+    const dateSeed = pstDate.toISOString().split("T")[0];
+
+    let hash = 0;
+    for (let i = 0; i < dateSeed.length; i++) {
+        hash = (hash * 31 + dateSeed.charCodeAt(i)) % 2147483647;
+    }
+
+    const getLetter = (index) => String.fromCharCode(65 + index);
+
+    const firstLetterIndex = ((hash % 26) + 26) % 26;
+    const secondLetterIndex = (((hash ^ (hash >> 5)) % 26) + 26) % 26;
+
+    console.log("Hash:", hash);
+    console.log("First Letter Index:", firstLetterIndex);
+    console.log("Second Letter Index:", secondLetterIndex);
+
+    const letters = [getLetter(firstLetterIndex), getLetter(secondLetterIndex)];
+
+    return letters;
+}
+
 function getWordOfDay() {
     const words = [
-    "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
-    "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
-    "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
-    "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ",
-    "THRIFT STORE", "BLOOMS TD BATTLES 2", "AIDAN", 
-    "BISCUITS AND MILK", "AUSTRIA", "CESAR SALAD", "STEAK", 
-    "DIABETES", "POKEMON", "SMARTIES COOKIE", 
-    "DUCK SITTING ON EARTH WATCHING TV", "PASULJ", 
-    "COWS", "MOSQUE", "SATURDAY", "X0.5", "CATS IN WINDOWS"
-];
+        "CUTE", "LOVE", "BEACH", "REACH", "IHATEWORK",
+        "OMG", "GYM", "SWIMMING", "STEAK", "BUTT",
+        "HEY", "MONTENEGRO", "POUND", "MONEY", "FRISBEE",
+        "DANCE", "PROTEIN", "WALK", "ACCOUNTING", "OJ",
+        "THRIFT STORE", "BLOOMS TD BATTLES 2", "AIDAN", 
+        "BISCUITS AND MILK", "AUSTRIA", "CESAR SALAD", "STEAK", 
+        "DIABETES", "POKEMON", "SMARTIES COOKIE", 
+        "DUCK SITTING ON EARTH WATCHING TV", "PASULJ", 
+        "COWS", "MOSQUE", "SATURDAY", "X0.5", "CATS IN WINDOWS"
+    ];
     
-    // Get the current date in UTC (or fixed PST timezone if you prefer)
     const now = new Date();
     const utcDate = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-    const dateSeed = utcDate.toISOString().split("T")[0]; // Fixed date in YYYY-MM-DD format
+    const dateSeed = utcDate.toISOString().split("T")[0];
 
-    // Generate a hash from the date for consistent "Word of the Day"
     let hash = 0;
     for (let i = 0; i < dateSeed.length; i++) {
         hash = ((hash << 5) - hash) + dateSeed.charCodeAt(i);
-        hash = hash & hash; // Keep the hash within bounds
+        hash = hash & hash;
     }
 
-    // Select a word based on the hash
     return words[Math.abs(hash) % words.length];
 }
 
 function toggleWordOfDay() {
     const popup = document.getElementById('wordOfDayPopup');
-    const word = getWordOfDay(); // Get the word of the day
+    const word = getWordOfDay();
 
-    document.getElementById('dailyWord').textContent = word; // Update the word in the popup
+    document.getElementById('dailyWord').textContent = word;
 
-    // Toggle visibility
     popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
 
-    // Hide the popup automatically after 3 seconds
     if (popup.style.display === 'block') {
         setTimeout(() => {
             popup.style.display = 'none';
         }, 3000);
     }
 }
-
-    const dailyWord = document.getElementById('dailyWord');
-    if (!dailyWord) {
-        const span = document.createElement('span');
-        span.id = 'dailyWord';
-        popup.appendChild(span);
-    }
-    
-    if (popup.style.display === 'block') {
-        popup.style.display = 'none';
-    } else {
-        const word = getWordOfDay();
-        document.getElementById('dailyWord').textContent = word;
-        popup.style.display = 'block';
-        
-        setTimeout(() => {
-            popup.style.display = 'none';
-        }, 3000);
-    }
 
 function calculateWordScore(word) {
     return Math.max(1, Math.floor(word.length * 1.5));
@@ -273,17 +212,13 @@ function cycleTheme() {
     currentTheme = (currentTheme + 1) % colorThemes.length;
     const theme = colorThemes[currentTheme];
     
-    // Apply the theme
     document.body.style.background = theme.background;
     
-    // Show a little message
     showPopupMessage(theme.name);
     
-    // Save preference
     localStorage.setItem('preferredTheme', currentTheme);
 }
 
-// Show success flash animation
 function showSuccessFlash() {
     const flash = document.querySelector('.success-flash');
     if (flash) {
@@ -295,13 +230,11 @@ function showSuccessFlash() {
 function checkSpecialWords(word) {
     const lowerWord = word.toLowerCase();
     
-    // Check if the word contains "dina" and award bonus points
     if (lowerWord.includes('dina')) {
-        score += 50;  // Add 50 bonus points
+        score += 50;
         document.getElementById("currentScore").textContent = `Score: ${score}`;
         showPopupMessage('💖 Found my name! +50 bonus points! 💖');
         
-        // Add the sparkle animation to the score
         document.getElementById("currentScore").style.animation = 'none';
         setTimeout(() => {
             document.getElementById("currentScore").style.animation = '';
@@ -313,32 +246,23 @@ function updateStreak() {
     const today = new Date().toLocaleDateString();
     
     if (lastPlayDate !== today) {
-        // It's a new day
         if (lastPlayDate) {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             if (lastPlayDate !== yesterday.toLocaleDateString()) {
-                // Streak broken - they missed a day
                 streak = 1;
             } else {
-                // Continued streak
                 streak++;
             }
         } else {
-            // First time playing
             streak = 1;
         }
         
-        // Save the new date and streak
         localStorage.setItem('lastPlayDate', today);
         localStorage.setItem('gameStreak', streak);
     }
-    
-    // Update the display
-    document.getElementById('streakDisplay').textContent = streak;
 }
 
-// Timer functions
 function startTimer() {
     clearInterval(timerInterval);
     updateProgressBar(60);
@@ -399,11 +323,11 @@ function showError(message) {
 }
 
 function returnToHome() {
-    manuallyExited = true;  // Set flag to true when exiting manually
-    document.getElementById("game").style.display = "none";       // Hide the game screen
-    document.getElementById("introScreen").style.display = "flex"; // Show the home screen
-    document.getElementById("homeLogo").style.display = "block";   // Ensure home logo is visible
-    gameRunning = false;                                           // Stop the game if it’s running
+    manuallyExited = true;
+    document.getElementById("game").style.display = "none";
+    document.getElementById("introScreen").style.display = "flex";
+    document.getElementById("homeLogo").style.display = "block";
+    gameRunning = false;
 }
 
 function displayWord(word) {
@@ -412,7 +336,7 @@ function displayWord(word) {
     const scoreSpan = document.createElement("span");
     const wordScore = calculateWordScore(word);
     scoreSpan.textContent = ` +${wordScore}`;
-    scoreSpan.classList.add("score-popup"); // Add the class for animation
+    scoreSpan.classList.add("score-popup");
     scoreSpan.style.color = "var(--primary-color)";
     wordElement.appendChild(scoreSpan);
     document.getElementById("wordsList").appendChild(wordElement);
@@ -420,30 +344,30 @@ function displayWord(word) {
 
 function updateHighScoreDisplay() {
     const highScore = localStorage.getItem("lettoraHighScore") || 0;
-    const highScoreLetters = localStorage.getItem("lettoraHighScoreLetters") || "AB"; // Default letters if no high score is set yet
-    document.getElementById('highScoreDisplay').textContent = highScore;
-    document.getElementById('highScoreLetters').textContent = highScoreLetters;
+    const highScoreLetters = localStorage.getItem("lettoraHighScoreLetters") || "AB";
+    if (document.getElementById('highScoreDisplay')) {
+        document.getElementById('highScoreDisplay').textContent = highScore;
+    }
+    if (document.getElementById('highScoreLetters')) {
+        document.getElementById('highScoreLetters').textContent = highScoreLetters;
+    }
 }
 
 async function endGame() {
     gameRunning = false;
 
-    // Only display the score and other end-game elements if the game was not manually exited
     if (!manuallyExited) {
         document.getElementById("finalScore").textContent = score;
 
-        // Check and update high score
         const currentHighScore = parseInt(localStorage.getItem("lettoraHighScore")) || 0;
         if (score > currentHighScore) {
             localStorage.setItem("lettoraHighScore", score.toString());
-            localStorage.setItem("lettoraHighScoreLetters", letters.join('')); // Save the letters used
-            createConfetti(); // Celebrate new high score
+            localStorage.setItem("lettoraHighScoreLetters", letters.join(''));
+            createConfetti();
         }
 
-        // Update today's best score
         const today = new Date().toLocaleDateString();
         if (localStorage.getItem('todaysBestDate') !== today) {
-            // New day, reset best
             todaysBest = score;
             localStorage.setItem('todaysBestDate', today);
         } else if (score > todaysBest) {
@@ -452,7 +376,6 @@ async function endGame() {
         localStorage.setItem('todaysBest', todaysBest.toString());
         document.getElementById("todaysBestScore").textContent = todaysBest;
 
-        // Display final word list
         const finalWordList = document.getElementById("finalWordList");
         finalWordList.innerHTML = '';
 
@@ -463,45 +386,49 @@ async function endGame() {
             finalWordList.appendChild(wordElement);
         });
 
-        // Update streak - improved logic
         const lastPlayDate = localStorage.getItem('lastPlayDate');
         let streak = parseInt(localStorage.getItem('gameStreak')) || 0;
         
         if (lastPlayDate !== today) {
-            // It's a new day
             if (lastPlayDate) {
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
                 if (lastPlayDate !== yesterday.toLocaleDateString()) {
-                    // Streak broken - they missed a day
                     streak = 1;
                 } else {
-                    // Continued streak
                     streak++;
                 }
             } else {
-                // First time playing
                 streak = 1;
             }
             
-            // Save the new date and streak
             localStorage.setItem('lastPlayDate', today);
             localStorage.setItem('gameStreak', streak.toString());
         }
         
-        // Always update the display
-        document.getElementById('streakDisplay').textContent = streak;
         document.getElementById("endScreen").style.display = "flex";
     }
 
-    // Reset the flag after ending the game
     manuallyExited = false;
-
-    // Update the personal high score display
     updateHighScoreDisplay();
+
+    try {
+        const res = await (window._dwgSaveScoreToCloud ? window._dwgSaveScoreToCloud(score, letters) : Promise.resolve({saved:false}));
+        if (res && res.saved) {
+          showPopupMessage('✅ Score saved!');
+        } else {
+          const endBtn = document.getElementById('endSignIn');
+          if (endBtn) endBtn.style.display = '';
+        }
+    } catch(e) { console.error('Cloud save failed', e); }
+
+    try {
+        if (window._dwgLoadLeaderboard) {
+          await window._dwgLoadLeaderboard(letters);
+        }
+    } catch(e) { console.error('Load leaderboard failed', e); }
 }
 
-// Also update the resetGame function to properly show current high score
 function resetGame() {
     timeLeft = 60; 
     score = 0;
@@ -514,12 +441,14 @@ function resetGame() {
     document.getElementById("wordInput").classList.remove("invalid");
     document.getElementById("errorMessage").textContent = "";
     document.getElementById("currentScore").textContent = "Score: 0";
-    updateHighScoreDisplay(); // Make sure high score is displayed correctly
+    updateHighScoreDisplay();
 }
 
 function initializeStreak() {
     const streak = parseInt(localStorage.getItem('gameStreak')) || 0;
-    document.getElementById('streakDisplay').textContent = streak;
+    if (document.getElementById('streakDisplay')) {
+        document.getElementById('streakDisplay').textContent = streak;
+    }
 }
 
 function createConfetti() {
@@ -545,15 +474,12 @@ function createConfetti() {
 }
 
 function shareScore() {
-    // Check if score and letters are defined and accessible
-    console.log("Current Score:", score);  // Debugging check
-    console.log("Letters:", letters);      // Debugging check
+    console.log("Current Score:", score);
+    console.log("Letters:", letters);
 
-    // Use the current score (not the high score)
     const currentScore = score;
-    const lettersText = letters.join('');  // Ensure letters array is converted to a string
+    const lettersText = letters.join('');
 
-    // Add performance emoji based on current score
     let performanceEmoji;
     if (currentScore < 50) performanceEmoji = "🌱";
     else if (currentScore < 100) performanceEmoji = "🌿";
@@ -561,7 +487,6 @@ function shareScore() {
     else if (currentScore < 200) performanceEmoji = "🏆";
     else performanceEmoji = "👑";
 
-    // Create formatted share text without high score
     const shareText = `Dina's Word Game ${performanceEmoji}\n` +
         `Letters: ${lettersText}\n` +
         `Score: ${currentScore}`;
@@ -569,21 +494,18 @@ function shareScore() {
     const shareUrl = window.location.href;
     const fullShareText = shareText + "\nPlay at: " + shareUrl;
 
-    // Use native sharing for mobile
     if (navigator.share) {
         navigator.share({
             title: "Dina's Word Game",
-            text: fullShareText  // Pass the full text without specifying the URL separately
+            text: fullShareText
         }).catch(error => console.error("Error sharing:", error));
     } else {
-        // Fallback for non-mobile devices or unsupported browsers
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullShareText)}`;
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
         const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Dina's Word Game")}&summary=${encodeURIComponent(shareText)}`;
         const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(fullShareText)}`;
         const mailtoUrl = `mailto:?subject=${encodeURIComponent("Check out Dina's Word Game!")}&body=${encodeURIComponent(fullShareText)}`;
 
-        // Replace button content with social media links for desktop
         document.getElementById("shareButton").innerHTML = `
             <a href="${twitterUrl}" target="_blank" style="color: #1DA1F2; margin-right: 10px;">Twitter</a>
             <a href="${facebookUrl}" target="_blank" style="color: #4267B2; margin-right: 10px;">Facebook</a>
