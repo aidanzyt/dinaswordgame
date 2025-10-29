@@ -38,14 +38,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--background);
             min-height: 100vh;
-            height: 100%; /* Add this */
+            height: 100%;
             width: 100%;
-            overflow: hidden; /* Change from overflow-x: hidden */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: fixed; /* Add this */
-            touch-action: none; /* Add this */
+            position: fixed;
+            touch-action: none;
         }
 
         body::before {
@@ -74,9 +74,9 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            height: 100vh; /* Change from min-height to height */
+            height: 100vh;
             width: 100%;
-            overflow: hidden; /* Add this */
+            overflow: hidden;
         }
 
         .logo {
@@ -87,20 +87,20 @@
 
         #homeLogo {
             position: absolute;
-            top: 100px; /* Adjust as necessary */
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .theme-button {
-    cursor: pointer;
-    padding: 5px;
-    transition: opacity 0.2s;
-}
+            cursor: pointer;
+            padding: 5px;
+            transition: opacity 0.2s;
+        }
 
-.theme-button:hover {
-    opacity: 0.7;
-}
+        .theme-button:hover {
+            opacity: 0.7;
+        }
 
         .intro-container, .game-container {
             display: flex;
@@ -171,25 +171,25 @@
         }
 
         .word-of-day-popup {
-    position: fixed;
-    top: 40px;  /* Adjust this to position it where you want it */
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    padding: 8px 15px;
-    border-radius: 15px;
-    font-size: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    display: none;
-    white-space: nowrap;
-    z-index: 1001; /* Make sure it's above other elements */
-    animation: fadeIn 0.3s ease;
-}
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            white-space: nowrap;
+            z-index: 1001;
+            animation: fadeIn 0.3s ease;
+        }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translate(-50%, 10px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
 
         .progress-container {
             width: 90%;
@@ -241,6 +241,10 @@
             width: 100%;
             padding: 10px;
             margin-top: 20px;
+            max-height: 30vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
         }
 
         #wordsList p {
@@ -255,15 +259,11 @@
         }
 
         .high-score {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
+            display: none;
+        }
+
+        .streak-counter {
+            display: none;
         }
 
         #endScreen {
@@ -286,6 +286,8 @@
             text-align: center;
             max-width: 90%;
             width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .popup button {
@@ -299,30 +301,6 @@
             margin-top: 20px;
         }
 
-        #wordsList {
-        max-height: 30vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 20px;
-    }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 10px;
-        }
-
-            .high-score {
-                top: auto;
-                bottom: 20px;
-        }
-
-            .game-container {
-                padding: 20px;
-                max-height: 100vh;
-                overflow: hidden;
-        }
-
-}
         .timer-warning {
             color: #ff4757 !important;
             animation: pulse 1s infinite;
@@ -332,17 +310,6 @@
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
-        }
-
-        #wordsList p {
-            background: #f8f9fa;
-            padding: 8px;
-            border-radius: 10px;
-            margin: 0;
-            font-size: clamp(14px, 2vw, 16px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         @keyframes scorePopup {
@@ -357,151 +324,294 @@
             font-weight: bold;
             animation: scorePopup 0.3s ease;
         }
+
         #wordSummary {
-    margin: 20px 0;
-    max-height: 200px;
-    overflow-y: auto;
-    width: 100%;
-}
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+        }
 
-#finalWordList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 8px;
-    padding: 10px;
-}
+        #finalWordList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 10px;
+        }
 
-#finalWordList p {
-    background: #f8f9fa;
-    padding: 8px;
-    border-radius: 8px;
-    margin: 0;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        #finalWordList p {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 8px;
+            margin: 0;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.popup {
-    max-height: 80vh;
-    overflow-y: auto;
-}
+        .score-display {
+            font-size: clamp(18px, 4vw, 24px);
+            color: var(--primary-color);
+            font-weight: bold;
+            margin: 10px 0;
+            animation: scoreUpdate 0.3s ease;
+        }
 
-.score-display {
-    font-size: clamp(18px, 4vw, 24px);
-    color: var(--primary-color);
-    font-weight: bold;
-    margin: 10px 0;
-    animation: scoreUpdate 0.3s ease;
-}
+        @keyframes scoreUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
 
-@keyframes scoreUpdate {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
+        .popup-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            animation: floatUp 1.5s ease-out;
+            z-index: 1000;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
 
-.popup-message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 20px;
-    animation: floatUp 1.5s ease-out;
-    z-index: 1000;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-}
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
+        }
 
-@keyframes floatUp {
-    0% { opacity: 0; transform: translate(-50%, -40%); }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; transform: translate(-50%, -60%); }
-}
+        .theme-counter {
+            position: fixed;
+            top: 52px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
 
-.theme-counter {
-    position: fixed;
-    top: 100px;  /* Position it below streak counter */
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    z-index: 100;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
+        .theme-counter:hover {
+            opacity: 0.8;
+        }
 
-.theme-counter:hover {
-    opacity: 0.8;
-}
+        #shareButton {
+            font-size: 18px;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
 
-@media (max-width: 480px) {
-    .theme-counter {
-        top: auto;
-        bottom: 100px;  /* Position above streak counter on mobile */
-    }
-}
+        #shareButton:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
 
-#shareButton {
-    font-size: 18px;
-    padding: 12px 30px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-}
+        #gameHeader {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 100;
+        }
 
-.streak-counter {
-    position: fixed;
-    top: 60px;  /* Position it below the high score */
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    z-index: 100;
-}
+        #gameHeader button {
+            padding: 8px 15px;
+            background-color: #ffcccc;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
 
-#gameHeader {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 100;
-}
+        #gameHeader button:hover {
+            background-color: #ffaaaa;
+        }
 
-#gameHeader button {
-    padding: 5px 10px;
-    background-color: #ffcccc;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        #authBar {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 1200;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
 
-@media (max-width: 480px) {
-    .streak-counter {
-        top: auto;
-        bottom: 60px;  /* Position above the high score on mobile */
-    }
-}
-#shareButton:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-}
+        #authStatus {
+            background: rgba(255,255,255,0.9);
+            padding: 6px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
 
+        .auth-btn {
+            padding: 6px 10px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            background: var(--primary-color);
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .auth-btn:hover {
+            opacity: 0.8;
+        }
+
+        .auth-btn.secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        #usernameModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1300;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #usernameCard {
+            background: var(--card-bg);
+            width: 420px;
+            max-width: 90%;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        #usernameCard h3 {
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
+        }
+
+        #usernameInput {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            margin-top: 10px;
+        }
+
+        #usernameInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #usernameSave {
+            margin-top: 12px;
+            width: 100%;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        #usernameError {
+            color: #ff4757;
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 16px;
+        }
+
+        #leaderboardBlock h3 {
+            margin-top: 10px;
+        }
+
+        #dailyLeaderboard div {
+            padding: 4px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .game-container {
+                padding: 20px;
+                max-height: 100vh;
+                overflow: hidden;
+            }
+
+            #gameHeader {
+                top: 12px;
+                left: 12px;
+            }
+
+            #authBar {
+                top: 12px;
+                right: 12px;
+                flex-direction: row;
+            }
+
+            .theme-counter {
+                top: 52px;
+                right: 12px;
+            }
+        }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBuFm9Ef4WIzN3YcKVzDsIxmu9hi_zbjew",
+        authDomain: "dina-s-word-game.firebaseapp.com",
+        projectId: "dina-s-word-game",
+        storageBucket: "dina-s-word-game.firebasestorage.app",
+        messagingSenderId: "991093758016",
+        appId: "1:991093758016:web:3c85415b1e393ea2d327a5",
+        measurementId: "G-P9D457JZPH"
+      };
+      firebase.initializeApp(firebaseConfig);
+      window.auth = firebase.auth();
+      window.db = firebase.firestore();
+    </script>
 </head>
 <body>
+    <div id="authBar">
+      <span id="authStatus">Not signed in</span>
+      <button id="loginBtn" class="auth-btn">Sign in</button>
+      <button id="logoutBtn" class="auth-btn secondary" style="display:none;">Log out</button>
+    </div>
+
+    <div id="usernameModal">
+      <div id="usernameCard">
+        <h3>Choose a username</h3>
+        <p style="color:var(--text-secondary); font-size:14px; margin-top:4px;">This will appear on the daily leaderboard.</p>
+        <input id="usernameInput" placeholder="e.g., DinaFan123" maxlength="20">
+        <div id="usernameError"></div>
+        <button id="usernameSave">Save username</button>
+      </div>
+    </div>
+
     <div class="success-flash"></div>
     <div class="high-score">High Score: <span id="highScoreDisplay">0</span> with letters <span id="highScoreLetters">AB</span></div>
     <div class="streak-counter">
@@ -522,53 +632,218 @@
         </div>
 
         <div id="game" class="game-container">
+            <div id="gameHeader">
+                <button onclick="returnToHome()">🏠 Return to Home</button>
+            </div>
             <h1 id="letters">AB</h1>
             <p id="timer">Time left: 60</p>
             <p id="currentScore" class="score-display">Score: 0</p>
             <div class="progress-container">
                 <div class="progress-bar" id="timeProgress"></div>
             </div>
-            <div id="gameHeader">
-                <button onclick="returnToHome()">🏠 Return to Home</button>
-            </div>            
             <input type="text" id="wordInput" placeholder="Enter word" autocomplete="off">
             <div id="errorMessage"></div>
             <button id="submitButton" onclick="submitWord()">Submit</button>
             <div id="wordsList"></div>
         </div>
 
-                <div id="endScreen">
+        <div id="endScreen">
             <div class="popup">
                 <h2>Game Over!</h2>
                 <p>Your Score: <span id="finalScore"></span></p>
                 <p>Today's Best: <span id="todaysBestScore">0</span></p>
+                <div id="leaderboardBlock">
+                  <h3>Today's Leaderboard</h3>
+                  <div id="dailyLeaderboard" style="text-align:left;"></div>
+                </div>
                 <div id="wordSummary">
                     <h3>Your Words:</h3>
                     <div id="finalWordList"></div>
                 </div>
+                <button id="endSignIn" style="display:none;" onclick="openLoginFlow()">Sign in to save your score</button>
                 <button onclick="closeEndScreen()">Play Again</button>
                 <button id="shareButton" onclick="shareScore()">Share Your Score</button>
             </div>
         </div>
     </div>
 
-    <!-- ✅ Tiny fixed footer (no scroll impact) -->
     <footer style="position:fixed; bottom:0; width:100%; font-size:11px; color:#555; background:none; text-align:center; padding:2px 0;">
       <span>Privacy: This site uses cookies & AdSense ads. 
         <a href="mailto:aidanlm@uvic.ca" style="color:#004b23; text-decoration:none;">Contact</a>
       </span>
     </footer>
 
+    <!-- Firebase SDKs (compat version, best for simple HTML sites) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBuFm9Ef4WIzN3YcKVzDsIxmu9hi_zbjew",
+    authDomain: "dina-s-word-game.firebaseapp.com",
+    projectId: "dina-s-word-game",
+    storageBucket: "dina-s-word-game.firebasestorage.app",
+    messagingSenderId: "991093758016",
+    appId: "1:991093758016:web:3c85415b1e393ea2d327a5",
+    measurementId: "G-P9D457JZPH"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  window.auth = firebase.auth();
+  window.db = firebase.firestore();
+</script>
+
     <script src="javascriptlettora.js"></script>
+
+    <script>
+      const authStatusEl = document.getElementById('authStatus');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const endSignInBtn = document.getElementById('endSignIn');
+
+      function openLoginFlow() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(err => alert('Login failed: ' + err.message));
+      }
+      loginBtn?.addEventListener('click', openLoginFlow);
+      logoutBtn?.addEventListener('click', () => auth.signOut());
+
+      const usernameModal = document.getElementById('usernameModal');
+      const usernameInput = document.getElementById('usernameInput');
+      const usernameSave  = document.getElementById('usernameSave');
+      const usernameError = document.getElementById('usernameError');
+
+      function showUsernameModal() {
+        usernameInput.value = '';
+        usernameError.textContent = '';
+        usernameModal.style.display = 'flex';
+        setTimeout(() => usernameInput.focus(), 50);
+      }
+      function hideUsernameModal() {
+        usernameModal.style.display = 'none';
+      }
+
+      async function getDisplayName(uid) {
+        try {
+          const doc = await db.collection('profiles').doc(uid).get();
+          return doc.exists && doc.data().displayName ? doc.data().displayName : null;
+        } catch { return null; }
+      }
+
+      async function ensureUsername(user) {
+        const name = await getDisplayName(user.uid);
+        if (!name) showUsernameModal();
+      }
+
+      usernameSave.addEventListener('click', async () => {
+        const user = auth.currentUser;
+        if (!user) { usernameError.textContent = 'Please sign in first.'; return; }
+        const desired = (usernameInput.value || '').trim();
+        if (!desired || desired.length < 3) { usernameError.textContent = 'Username must be at least 3 characters.'; return; }
+        if (!/^[A-Za-z0-9_]+$/.test(desired)) { usernameError.textContent = 'Use letters, numbers, underscores only.'; return; }
+
+        try {
+          const q = await db.collection('profiles').where('displayName', '==', desired).get();
+          if (!q.empty && q.docs.some(d => d.id !== user.uid)) {
+            usernameError.textContent = 'That username is taken. Try another.';
+            return;
+          }
+          await db.collection('profiles').doc(user.uid).set({ displayName: desired }, { merge: true });
+          hideUsernameModal();
+          showPopupMessage('✅ Username saved!');
+        } catch (e) {
+          usernameError.textContent = 'Could not save username. Try again.';
+        }
+      });
+
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          authStatusEl.textContent = `Signed in: ${user.email || 'Player'}`;
+          loginBtn.style.display = 'none';
+          logoutBtn.style.display = '';
+          endSignInBtn.style.display = 'none';
+
+          const prof = await getDisplayName(user.uid);
+          if (!prof) showUsernameModal();
+
+        } else {
+          authStatusEl.textContent = 'Not signed in';
+          loginBtn.style.display = '';
+          logoutBtn.style.display = 'none';
+          if (document.getElementById('endScreen').style.display === 'flex') {
+            endSignInBtn.style.display = '';
+          }
+        }
+      });
+
+      function yyyymmddPST(now=new Date()) {
+        const utc = now.getTime() + (now.getTimezoneOffset()*60000);
+        const pst = new Date(utc + (-8 * 3600000));
+        const y = pst.getUTCFullYear();
+        const m = String(pst.getUTCMonth()+1).padStart(2,'0');
+        const d = String(pst.getUTCDate()).padStart(2,'0');
+        return `${y}-${m}-${d}`;
+      }
+
+      async function getUsername(uid) {
+        try {
+          const doc = await db.collection('profiles').doc(uid).get();
+          return (doc.exists && doc.data().displayName) ? doc.data().displayName : 'Player';
+        } catch { return 'Player'; }
+      }
+
+      async function saveScoreToCloud(finalScore, lettersArr) {
+        const user = auth.currentUser;
+        if (!user) return { saved:false, reason:'not_signed_in' };
+        const lettersKey = Array.isArray(lettersArr) ? lettersArr.join('') : String(lettersArr||'');
+        await db.collection('scores').add({
+          uid: user.uid,
+          score: Math.floor(finalScore),
+          letters: lettersKey,
+          day: yyyymmddPST(),
+          playedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        return { saved:true };
+      }
+
+      async function loadDailyLeaderboard(lettersArr) {
+        const lettersKey = Array.isArray(lettersArr) ? lettersArr.join('') : String(lettersArr||'');
+        const day = yyyymmddPST();
+        const bestEl = document.getElementById('todaysBestScore');
+        const listEl = document.getElementById('dailyLeaderboard');
+        bestEl.textContent = '0';
+        listEl.innerHTML = '<div class="muted">Loading…</div>';
+
+        const qs = await db.collection('scores')
+          .where('day', '==', day)
+          .where('letters', '==', lettersKey)
+          .orderBy('score', 'desc')
+          .limit(10)
+          .get();
+
+        if (qs.empty) {
+          listEl.innerHTML = '<div class="muted">No entries yet.</div>';
+          return;
+        }
+
+        const rows = [];
+        let topScore = 0;
+        let i = 0;
+        for (const doc of qs.docs) {
+          const s = doc.data();
+          if (i === 0) topScore = s.score;
+          const name = await getUsername(s.uid);
+          rows.push(`${i+1}. <strong>${s.score}</strong> — ${name}`);
+          i++;
+        }
+        bestEl.textContent = topScore;
+        listEl.innerHTML = rows.map(r => `<div>${r}</div>`).join('');
+      }
+
+      window._dwgSaveScoreToCloud = saveScoreToCloud;
+      window._dwgLoadLeaderboard = loadDailyLeaderboard;
+      window.openLoginFlow = openLoginFlow;
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
