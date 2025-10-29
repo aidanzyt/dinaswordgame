@@ -597,7 +597,7 @@
 <div id="authBar">
   <span id="authStatus">Not signed in</span>
   <button id="loginBtn" class="auth-btn" onclick="openLoginFlow()">Sign in</button>
-  <button id="logoutBtn" class="auth-btn secondary" style="display:none;">Log out</button>
+  <button id="logoutBtn" class="auth-btn secondary" style="display:none;" onclick="logoutUser()">Log out</button>
 </div>
 
     <div id="usernameModal">
@@ -708,6 +708,20 @@
       }
     });
   }
+
+  function logoutUser() {
+  if (window.auth) {
+    auth.signOut().then(() => {
+      console.log("User signed out successfully");
+      showPopupMessage("👋 Logged out");
+    }).catch(err => {
+      console.error("Logout error:", err);
+      alert("Logout failed: " + (err.message || err.code));
+    });
+  } else {
+    alert("Auth not initialized yet. Try again.");
+  }
+}
 
       function showUsernameModal() {
         usernameInput.value = '';
