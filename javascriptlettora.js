@@ -353,6 +353,25 @@ function updateHighScoreDisplay() {
     }
 }
 
+// --- SAVE SCORE (if signed in) & LOAD LEADERBOARD ---
+(async () => {
+  try {
+    // Save (won’t save if not signed in)
+    if (window._dwgSaveScoreToCloud) {
+      await window._dwgSaveScoreToCloud(score, letters);
+    }
+
+    // Always load the leaderboard (read is public)
+    if (window._dwgLoadLeaderboard) {
+      await window._dwgLoadLeaderboard(letters);
+    }
+  } catch (e) {
+    console.error('Leaderboard/Save error:', e);
+    const listEl = document.getElementById('dailyLeaderboard');
+    if (listEl) listEl.innerHTML = `<div style="color:#c00;">Error loading leaderboard: ${e.code || e.message}</div>`;
+  }
+})();
+
 async function endGame() {
     gameRunning = false;
 
