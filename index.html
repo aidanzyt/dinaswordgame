@@ -673,25 +673,6 @@
       </span>
     </footer>
 
-    <!-- Firebase SDKs (compat version, best for simple HTML sites) -->
-<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBuFm9Ef4WIzN3YcKVzDsIxmu9hi_zbjew",
-    authDomain: "dina-s-word-game.firebaseapp.com",
-    projectId: "dina-s-word-game",
-    storageBucket: "dina-s-word-game.firebasestorage.app",
-    messagingSenderId: "991093758016",
-    appId: "1:991093758016:web:3c85415b1e393ea2d327a5",
-    measurementId: "G-P9D457JZPH"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  window.auth = firebase.auth();
-  window.db = firebase.firestore();
 </script>
 
     <script src="javascriptlettora.js"></script>
@@ -703,16 +684,32 @@
       const endSignInBtn = document.getElementById('endSignIn');
 
       function openLoginFlow() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => alert('Login failed: ' + err.message));
-      }
-      loginBtn?.addEventListener('click', openLoginFlow);
-      logoutBtn?.addEventListener('click', () => auth.signOut());
+    const provider = new firebase.auth.GoogleAuthProvider();
 
-      const usernameModal = document.getElementById('usernameModal');
-      const usernameInput = document.getElementById('usernameInput');
-      const usernameSave  = document.getElementById('usernameSave');
-      const usernameError = document.getElementById('usernameError');
+    // Keep session across refreshes
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+
+    auth.signInWithPopup(provider).catch(err => {
+      console.warn('Popup sign-in failed:', err.code, err.message);
+
+      const fallbackCodes = new Set([
+        'auth/argument-error',
+        'auth/operation-not-supported-in-this-environment',
+        'auth/popup-blocked',
+        'auth/popup-closed-by-user'
+      ]);
+      if (fallbackCodes.has(err.code)) {
+        // Try redirect if popup fails
+        auth.signInWithRedirect(provider).catch(e => {
+          alert(`Login failed: ${e.code || e.message}`);
+        });
+      } else if (err.code === 'auth/unauthorized-domain') {
+        alert('Domain not authorized. Add your domain in Firebase → Auth → Settings → Authorized domains.');
+      } else {
+        alert(`Login failed: ${err.code || err.message}`);
+      }
+    });
+  }
 
       function showUsernameModal() {
         usernameInput.value = '';
