@@ -444,14 +444,12 @@
         }
 
         #authBar {
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            z-index: 1200;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2000;          /* higher than any popups/containers */
+  pointer-events: auto;   /* make sure clicks aren’t swallowed */
+}
 
         #authStatus {
             background: rgba(255,255,255,0.9);
@@ -596,11 +594,11 @@
     </script>
 </head>
 <body>
-    <div id="authBar">
-      <span id="authStatus">Not signed in</span>
-      <button id="loginBtn" class="auth-btn">Sign in</button>
-      <button id="logoutBtn" class="auth-btn secondary" style="display:none;">Log out</button>
-    </div>
+<div id="authBar">
+  <span id="authStatus">Not signed in</span>
+  <button id="loginBtn" class="auth-btn" onclick="openLoginFlow()">Sign in</button>
+  <button id="logoutBtn" class="auth-btn secondary" style="display:none;">Log out</button>
+</div>
 
     <div id="usernameModal">
       <div id="usernameCard">
