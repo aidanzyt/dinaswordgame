@@ -715,10 +715,21 @@
             <div class="progress-container">
                 <div class="progress-bar" id="timeProgress"></div>
             </div>
-            <input type="text" id="wordInput" placeholder="Enter word" autocomplete="off">
-            <div id="errorMessage"></div>
-            <button id="submitButton" onclick="submitWord()">Submit</button>
-            <div id="wordsList"></div>
+<input 
+  type="text" 
+  id="wordInput" 
+  placeholder="Enter word" 
+  autocomplete="off"
+  autocapitalize="none"
+  autocorrect="off"
+  spellcheck="false"
+  onpaste="return false"
+  ondrop="return false"
+  ondragover="return false"
+/>
+<div id="errorMessage"></div>
+<button id="submitButton" onclick="submitWord()">Submit</button>
+<div id="wordsList"></div>
         </div>
 
         <div id="endScreen">
@@ -994,6 +1005,35 @@ async function toggleDailyLeaderboard() {
 function closeHomeLeaderboard() {
   document.getElementById('homeLeaderboardPopup').style.display = 'none';
 }
+
+// 🚫 Prevent paste, drag, and right-click in the word input
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('wordInput');
+  if (!input) return;
+
+  // Block keyboard paste (Ctrl/Cmd + V)
+  input.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) {
+      e.preventDefault();
+    }
+  });
+
+  // Block actual paste events and drag/drop
+  ['paste', 'drop', 'dragover'].forEach(evt => {
+    input.addEventListener(evt, e => e.preventDefault());
+  });
+
+  // Block programmatic paste (like insertFromPaste)
+  input.addEventListener('beforeinput', e => {
+    if (e.inputType && e.inputType.startsWith('insertFromPaste')) {
+      e.preventDefault();
+    }
+  });
+
+  // Disable right-click paste menu
+  input.addEventListener('contextmenu', e => e.preventDefault());
+});
+
 </script>
 </body>
 </html>
