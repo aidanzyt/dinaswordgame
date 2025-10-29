@@ -405,6 +405,58 @@
             opacity: 0.8;
         }
 
+        .leaderboard-toggle {
+    position: fixed;
+    top: 92px;               /* just below the theme button */
+    right: 12px;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.leaderboard-toggle:hover {
+    opacity: 0.8;
+}
+
+#homeLeaderboardPopup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+}
+
+#homeLeaderboardCard {
+    background: var(--card-bg);
+    width: 420px;
+    max-width: 90%;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+#homeLeaderboardCard h2 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+#homeLeaderboardList div {
+    padding: 6px 0;
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
         #shareButton {
             font-size: 18px;
             padding: 12px 30px;
@@ -618,6 +670,9 @@
     <div class="theme-counter">
         <span class="theme-button" onclick="cycleTheme()">🎨 Theme</span>
     </div>
+    <div class="leaderboard-toggle">
+    <span class="leaderboard-button" onclick="toggleDailyLeaderboard()">🏆 Today's Top 10</span>
+</div>
     <div class="container">
         <img src="dinas-word-game-small.svg" alt="DWG Logo" id="homeLogo" class="logo" onclick="toggleWordOfDay()">
         <div id="wordOfDayPopup" class="word-of-day-popup">
@@ -629,7 +684,7 @@
             <button class="play-button" onclick="startGame()">Play</button>
         </div>
 
-        <div id="game" class="game-container">
+                <div id="game" class="game-container">
             <div id="gameHeader">
                 <button onclick="returnToHome()">🏠 Return to Home</button>
             </div>
@@ -662,6 +717,15 @@
                 <button onclick="closeEndScreen()">Play Again</button>
                 <button id="shareButton" onclick="shareScore()">Share Your Score</button>
             </div>
+        </div>
+
+        <!-- 🏆 Daily Leaderboard Popup (Home screen) -->
+        <div id="homeLeaderboardPopup">
+          <div id="homeLeaderboardCard">
+            <h2>🏆 Today's Top 10</h2>
+            <div id="homeLeaderboardList">Loading…</div>
+            <button style="margin-top:15px;" onclick="closeHomeLeaderboard()">Close</button>
+          </div>
         </div>
     </div>
 
@@ -853,6 +917,51 @@
       window._dwgSaveScoreToCloud = saveScoreToCloud;
       window._dwgLoadLeaderboard = loadDailyLeaderboard;
       window.openLoginFlow = openLoginFlow;
+
+      // 🏆 Home screen leaderboard popup
+async function toggleDailyLeaderboard() {
+  const popup = document.getElementById('homeLeaderboardPopup');
+  const listEl = document.getElementById('homeLeaderboardList');
+  if (popup.style.display === 'flex') {
+    popup.style.display = 'none';
+    return;
+  }
+
+  popup.style.display = 'flex';
+  listEl.innerHTML = 'Loading…';
+
+  try {
+    const day = yyyymmddPST();
+    const qs = await db.collection('scores')
+      .where('day', '==', day)
+      .orderBy('score', 'desc')
+      .limit(10)
+      .get();
+
+    if (qs.empty) {
+      listEl.innerHTML = '<div>No games yet today.</div>';
+      return;
+    }
+
+    const rows = [];
+    let i = 0;
+    for (const doc of qs.docs) {
+      const s = doc.data();
+      const name = await getUsername(s.uid);
+      rows.push(`<div>${i + 1}. <strong>${s.score}</strong> — ${name}</div>`);
+      i++;
+    }
+    listEl.innerHTML = rows.join('');
+  } catch (err) {
+    console.error('Error loading home leaderboard:', err);
+    listEl.innerHTML = `<div style="color:#c00;">Error loading leaderboard</div>`;
+  }
+}
+
+function closeHomeLeaderboard() {
+  document.getElementById('homeLeaderboardPopup').style.display = 'none';
+}
+
     </script>
 </body>
 </html>
