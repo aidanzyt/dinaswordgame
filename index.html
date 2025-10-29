@@ -598,6 +598,27 @@
             color: var(--text-secondary);
         }
 
+        /* End-screen: two-column leaderboard */
+#dailyLeaderboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  text-align: left;          /* keep your original look */
+}
+.lb-col {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+.lb-item { padding: 4px 0; }
+
+/* Stack on small screens */
+@media (max-width: 480px) {
+  #dailyLeaderboard {
+    grid-template-columns: 1fr;
+  }
+}
+
         @media (max-width: 480px) {
             .container {
                 padding: 10px;
@@ -895,30 +916,42 @@
           .limit(10)
           .get();
 
-        if (qs.empty) {
-          listEl.innerHTML = '<div class="muted">No entries yet.</div>';
-          return;
-        }
+       if (qs.empty) {
+    // Show empty two-column state
+    listEl.innerHTML = `
+      <div class="lb-col"><div class="lb-item">No entries yet.</div></div>
+      <div class="lb-col"><div class="lb-item">—</div></div>
+    `;
+    return;
+  }
 
-        const rows = [];
-        let topScore = 0;
-        let i = 0;
-        for (const doc of qs.docs) {
-          const s = doc.data();
-          if (i === 0) topScore = s.score;
-          const name = await getUsername(s.uid);
-          rows.push(`${i+1}. <strong>${s.score}</strong> — ${name}`);
-          i++;
-        }
-        bestEl.textContent = topScore;
-        listEl.innerHTML = rows.map(r => `<div>${r}</div>`).join('');
-      }
+  const items = [];
+  let topScore = 0;
+  let i = 0;
+  for (const doc of qs.docs) {
+    const s = doc.data();
+    if (i === 0) topScore = s.score;
+    const name = await getUsername(s.uid);
+    items.push(`<div class="lb-item">${i + 1}. <strong>${s.score}</strong> — ${name}</div>`);
+    i++;
+  }
 
-      window._dwgSaveScoreToCloud = saveScoreToCloud;
-      window._dwgLoadLeaderboard = loadDailyLeaderboard;
-      window.openLoginFlow = openLoginFlow;
+  // Split into 1–5 (left) and 6–10 (right)
+  const left  = items.slice(0, 5).join('') || '<div class="lb-item muted">No entries yet.</div>';
+  const right = items.slice(5,10).join('') || '<div class="lb-item muted">—</div>';
 
-      // 🏆 Home screen leaderboard popup
+  bestEl.textContent = topScore;
+  listEl.innerHTML = `
+    <div class="lb-col">${left}</div>
+    <div class="lb-col">${right}</div>
+  `;
+}
+
+window._dwgSaveScoreToCloud = saveScoreToCloud;
+window._dwgLoadLeaderboard = loadDailyLeaderboard;
+window.openLoginFlow = openLoginFlow;
+
+// 🏆 Home screen leaderboard popup
 async function toggleDailyLeaderboard() {
   const popup = document.getElementById('homeLeaderboardPopup');
   const listEl = document.getElementById('homeLeaderboardList');
@@ -961,7 +994,6 @@ async function toggleDailyLeaderboard() {
 function closeHomeLeaderboard() {
   document.getElementById('homeLeaderboardPopup').style.display = 'none';
 }
-
-    </script>
+</script>
 </body>
 </html>
