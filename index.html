@@ -962,7 +962,7 @@ window._dwgSaveScoreToCloud = saveScoreToCloud;
 window._dwgLoadLeaderboard = loadDailyLeaderboard;
 window.openLoginFlow = openLoginFlow;
 
-// 🏆 Home screen leaderboard popup
+// 🏆 Home screen leaderboard popup (fixed daily reset + same letters filter)
 async function toggleDailyLeaderboard() {
   const popup = document.getElementById('homeLeaderboardPopup');
   const listEl = document.getElementById('homeLeaderboardList');
@@ -976,8 +976,13 @@ async function toggleDailyLeaderboard() {
 
   try {
     const day = yyyymmddPST();
+    // Use the same letters as today's game
+    const lettersArr = getDailyLetters();
+    const lettersKey = Array.isArray(lettersArr) ? lettersArr.join('') : String(lettersArr || '');
+
     const qs = await db.collection('scores')
       .where('day', '==', day)
+      .where('letters', '==', lettersKey)  // ✅ Added this line to match the game of the day
       .orderBy('score', 'desc')
       .limit(10)
       .get();
@@ -995,6 +1000,7 @@ async function toggleDailyLeaderboard() {
       rows.push(`<div>${i + 1}. <strong>${s.score}</strong> — ${name}</div>`);
       i++;
     }
+
     listEl.innerHTML = rows.join('');
   } catch (err) {
     console.error('Error loading home leaderboard:', err);
