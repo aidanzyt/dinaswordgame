@@ -12,14 +12,14 @@ let lastPlayDate = localStorage.getItem('lastPlayDate');
 let todaysBest = parseInt(localStorage.getItem('todaysBest')) || 0;
 
 const colorThemes = [
-    { name: '🏛️ Vienna', background: 'linear-gradient(120deg, #f7f1e3 0%, #d4b483 45%, #c41e3a 100%)' },
-    { name: '🍫 Nutella Cookies', background: 'linear-gradient(120deg, #4b2e23 0%, #6a4733 40%, #d7b899 100%)' },
-    { name: '🃏 Cambio', background: 'linear-gradient(120deg, #0b3d0b 0%, #145214 40%, #3bb273 100%)' },
-    { name: '🍹 Aperol Spritz', background: 'linear-gradient(120deg, #ff7e00 0%, #ff9f45 45%, #ffd1a1 100%)' },
-    { name: '🧿 Evil Eye', background: 'linear-gradient(120deg, #001f54 0%, #00509d 35%, #00a6fb 70%, #e1f5fe 100%)' },
-    { name: '💞 1 Year Anniversary', background: 'linear-gradient(120deg, #ffe5ec 0%, #ffd1dc 45%, #f7c6a3 100%)' },
-    { name: '💼 Wealthsimple Premium', background: 'linear-gradient(120deg, #0f0f10 0%, #1b1b1c 55%, #d4af37 100%)' },
-    { name: '🥟 Burek', background: 'linear-gradient(120deg, #f5d399 0%, #e8b979 45%, #c98f4a 100%)' }
+    { name: '🏛️ Vienna', background: 'linear-gradient(120deg, #f2e6c9 0%, #cfa76e 45%, #9f1d2d 100%)' },
+    { name: '🍫 Nutella Cookies', background: 'linear-gradient(120deg, #3c241c 0%, #5a392c 40%, #c8a981 100%)' },
+    { name: '🃏 Cambio', background: 'linear-gradient(120deg, #093109 0%, #166d16 40%, #3dbf78 100%)' },
+    { name: '🍹 Aperol Spritz', background: 'linear-gradient(120deg, #e85c00 0%, #ff8b3d 45%, #ffd7a1 100%)' },
+    { name: '🧿 Evil Eye', background: 'linear-gradient(120deg, #001a45 0%, #003f91 35%, #0095eb 70%, #e3f4fd 100%)' },
+    { name: '💞 1 Year Anniversary', background: 'linear-gradient(120deg, #fbd6e0 0%, #f8bfbf 45%, #f1b48d 100%)' },
+    { name: '💼 Wealthsimple Premium', background: 'linear-gradient(120deg, #0d0d0e 0%, #1b1b1b 55%, #d4af37 100%)' },
+    { name: '🥟 Burek', background: 'linear-gradient(120deg, #e4c178 0%, #d09d56 45%, #a87433 100%)' }
 ];
 
 window.onload = function() {
@@ -534,4 +534,5 @@ function shareScore() {
         `;
     }
 }
+
 
