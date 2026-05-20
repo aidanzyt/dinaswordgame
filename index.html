@@ -61,6 +61,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     /* Grain texture overlay for editorial feel */
     body::after {
       content: '';
@@ -170,7 +176,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      width: 90%;
+      width: 100%;
       max-width: 560px;
       padding: 30px 20px;
     }
@@ -323,9 +329,10 @@
       background: var(--card-bg);
       box-shadow: var(--shadow-strong);
       border: 1px solid var(--border-soft);
-      width: min(580px, 95%);
+      width: min(580px, 100%);
       max-height: calc(100vh - 120px);
       position: relative;
+      min-width: 0;
     }
 
     /* Game header strip */
@@ -528,10 +535,12 @@
       gap: 8px;
       width: 100%;
       margin-bottom: 6px;
+      min-width: 0; /* allow flex children to shrink */
     }
 
     #wordInput {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0; /* critical: prevent overflow from input's intrinsic min width */
       font-family: var(--font-display);
       font-size: 22px;
       font-weight: 600;
@@ -543,6 +552,7 @@
       transition: all 0.2s;
       letter-spacing: 0.02em;
       text-transform: lowercase;
+      width: 100%; /* fallback */
     }
 
     #wordInput:focus {
@@ -573,6 +583,8 @@
       border: none;
       border-radius: 12px;
       cursor: pointer;
+      flex-shrink: 0; /* never let the submit button shrink */
+      white-space: nowrap;
       transition: all 0.2s;
       letter-spacing: 0.02em;
       text-transform: uppercase;
@@ -1131,18 +1143,70 @@
       top: -20px;
     }
 
-    /* Mobile responsive */
-    @media (max-width: 520px) {
-      .top-bar.right .chip:not(.icon-only) { display: none; }
-      .top-bar .auth-chip-mobile { display: inline-flex; }
-      .game-container { padding: 18px 18px 14px; }
-      .letter-tiles { gap: 8px; }
+    /* Mobile responsive — tablet & below */
+    @media (max-width: 600px) {
+      .container { padding: 12px; }
+      .game-container {
+        padding: 16px 14px 12px;
+        width: 100%;
+        max-height: calc(100vh - 100px);
+      }
+      .letter-tiles { gap: 10px; margin: 4px 0 14px; }
+      .letter-tile {
+        width: clamp(58px, 20vw, 80px);
+        height: clamp(70px, 24vw, 96px);
+        font-size: clamp(36px, 11vw, 52px);
+        box-shadow: 3px 3px 0 var(--text-primary);
+      }
+      .game-status-bar { padding-bottom: 10px; margin-bottom: 12px; }
+      .status-value { font-size: 22px; }
+      .status-controls { gap: 4px; }
+      .icon-btn { width: 30px; height: 30px; font-size: 13px; }
+      #wordInput { font-size: 18px; padding: 12px 14px; }
+      #submitButton { padding: 0 16px; font-size: 13px; }
+      #wordsList { max-height: 22vh; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+      .word-chip { font-size: 13px; padding: 6px 10px; }
       .stats-grid { gap: 4px; padding: 10px; }
       .stat-value { font-size: 18px; }
       .intro-meta { gap: 16px; }
-      h1.intro-title { font-size: 44px; }
-      #wordsList { max-height: 22vh; }
-      .game-status-bar { padding-bottom: 10px; margin-bottom: 12px; }
+      h1.intro-title { font-size: clamp(36px, 12vw, 56px); }
+      .intro-container { padding: 20px 16px; }
+
+      /* Top bars: keep all controls visible, just compact them */
+      .top-bar { top: 12px; gap: 6px; }
+      .top-bar.left { left: 12px; }
+      .top-bar.right { right: 12px; }
+      .chip {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      .chip.icon-only { width: 32px; height: 32px; font-size: 14px; }
+
+      /* Auth status text gets shorter; sign-in stays visible */
+      #authStatus { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+
+    /* Extra-narrow phones (<380px) — hide non-essential text */
+    @media (max-width: 380px) {
+      .top-bar.left .chip:first-child { font-size: 0; padding: 6px 8px; }
+      .top-bar.left .chip:first-child::before {
+        content: '🏆';
+        font-size: 14px;
+      }
+      #authStatus { display: none; }
+      .letter-tiles { gap: 8px; }
+      .game-container { padding: 14px 12px 10px; }
+      #wordInput { font-size: 17px; padding: 11px 12px; }
+      #submitButton { padding: 0 14px; }
+    }
+
+    /* Short viewports — keep things compact vertically */
+    @media (max-height: 700px) {
+      .letter-tile {
+        height: clamp(64px, 18vh, 95px);
+      }
+      #wordsList { max-height: 18vh; }
+      .combo-meter { margin-bottom: 8px; }
     }
   </style>
 
